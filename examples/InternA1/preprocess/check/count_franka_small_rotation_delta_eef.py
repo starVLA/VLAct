@@ -34,10 +34,10 @@ except Exception:
     tqdm = None
 
 DEFAULT_ROOT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1/sim_updated"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1/sim_updated"
 )
 DEFAULT_OUTPUT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/examples/InternA1/preprocess/check/out/"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/examples/InternA1/preprocess/check/out/"
     "franka_small_rotation_delta_eef_summary.json"
 )
 ACTION_KEY = "actions.gripper.pose"

@@ -33,10 +33,10 @@ import numpy as np
 import pandas as pd
 
 DEFAULT_ROOT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1/sim_updated"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1/sim_updated"
 )
 DEFAULT_OUTPUT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/examples/InternA1/preprocess/check/out/franka_delta_eef_action_distribution.svg"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/examples/InternA1/preprocess/check/out/franka_delta_eef_action_distribution.svg"
 )
 ACTION_KEY = "actions.gripper.pose"
 STATE_KEY = "states.gripper.pose"

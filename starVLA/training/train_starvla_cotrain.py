@@ -255,6 +255,8 @@ class VLAMTrainer(TrainerUtils):
 
     def train(self):
         """Execute training loop."""
+        # from_pretrained 默认 eval 模式；不转 train 的话 gradient checkpointing 不生效
+        self.model.train()
         self._log_training_config()
         self._create_data_iterators()
         progress_bar = tqdm(
@@ -374,6 +376,16 @@ class VLAMTrainer(TrainerUtils):
             logger.info(f"  Gradient accumulation steps = {self.config.trainer.gradient_accumulation_steps}")
             logger.info(f"  Total batch size = {self.total_batch_size}")
 
+    @staticmethod
+    def _memdbg(tag):
+        if os.environ.get("MEMDBG") == "1" and (not dist.is_initialized() or dist.get_rank() == 0):
+            print(
+                f"[MEMDBG] {tag}: alloc={torch.cuda.memory_allocated()/2**30:.1f}G "
+                f"reserved={torch.cuda.memory_reserved()/2**30:.1f}G "
+                f"max={torch.cuda.max_memory_allocated()/2**30:.1f}G",
+                flush=True,
+            )
+
     def _train_step(self, batch_vla, batch_vlm):
         """Execute single training step."""
         log_dict = {}
@@ -384,12 +396,16 @@ class VLAMTrainer(TrainerUtils):
                 output_dict = self.model.forward(batch_vla)
                 action_loss = output_dict["action_loss"]
                 total_loss = action_loss
+            self._memdbg("after VLA fwd")
             self.accelerator.backward(total_loss)
+            self._memdbg("after VLA bwd")
 
             with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
                 vlm_output = self.model.qwen_vl_interface(**batch_vlm)
                 vlm_loss = vlm_output.loss * self.config.trainer.loss_scale.vlm
+            self._memdbg("after VLM fwd")
             self.accelerator.backward(vlm_loss)
+            self._memdbg("after VLM bwd")
 
             if self.config.trainer.gradient_clipping is not None:
                 self.accelerator.clip_grad_norm_(self.model.parameters(), self.config.trainer.gradient_clipping)

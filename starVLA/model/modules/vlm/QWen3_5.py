@@ -66,6 +66,13 @@ class _QWen3_5_VL_Interface(nn.Module):
         processor = AutoProcessor.from_pretrained(model_id)
         processor.tokenizer.padding_side = "left"
 
+        trainer_cfg = config.get("trainer", {}) if config is not None else {}
+        if trainer_cfg.get("enable_gradient_checkpointing", False):
+            model.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}
+            )
+            logger.info("Gradient checkpointing enabled for Qwen3.5-VL")
+
         self.model = model
         self.processor = processor
         self.config = config
@@ -85,6 +92,8 @@ class _QWen3_5_VL_Interface(nn.Module):
         """
         Forward pass delegating to underlying Qwen3.5-VL backbone.
         """
+        # training 时不需要 KV cache；推理 generate() 不走这里
+        kwargs.setdefault("use_cache", False)
 
         with torch.autocast("cuda", dtype=torch.bfloat16):
             outputs = self.model(

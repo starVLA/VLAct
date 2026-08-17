@@ -75,7 +75,7 @@ def preprocess_qwen_2_visual(
 
         input_id, target = [], []
 
-        input_id += tokenizer.apply_chat_template([{"role": "system", "content": system_message}])
+        input_id += tokenizer.apply_chat_template([{"role": "system", "content": system_message}], return_dict=False)
         target += [IGNORE_INDEX] * len(input_id)
 
         for conv in source:
@@ -105,7 +105,7 @@ def preprocess_qwen_2_visual(
                     content = "".join(new_parts)
 
             conv = [{"role": role, "content": content}]
-            encode_id = tokenizer.apply_chat_template(conv)
+            encode_id = tokenizer.apply_chat_template(conv, return_dict=False)
             input_id += encode_id
             if role in ["user", "system"]:
                 target += [IGNORE_INDEX] * len(encode_id)

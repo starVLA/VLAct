@@ -63,7 +63,7 @@ datasets:
     action_type: abs_qpos
     action_mode: abs
     sequential_step_sampling: False
-    CoT_prompt: "Robot: AgileX, Action: Absolute joint. FPS: 15. Your task is {instruction}. To identify the key objects for your task. Locate their bounding boxes in [x1,y1,x2,y2] format."
+    CoT_prompt: "Robot: AgileX, Action: Absolute joint. Your task is {instruction}. To identify the key objects for your task. Locate their bounding boxes in [x1,y1,x2,y2] format."
     CoT_answer: bbox
     prompt_prefix_embodiment: false
     default_image_resolution: [3, 224, 224]

@@ -39,7 +39,7 @@ from starVLA.dataloader.lerobot_datasets import (
 )
 
 
-DATA_ROOT = Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets")
+DATA_ROOT = Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets")
 DATA_NAME = "DROID"
 ROBOT_TYPE = "oxe_droid_exterior1_wrist_manualvel_50"
 DELETE_PAUSE_FRAME = False

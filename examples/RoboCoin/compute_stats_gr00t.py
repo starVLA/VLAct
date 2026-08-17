@@ -33,7 +33,7 @@ from starVLA.dataloader.lerobot_datasets import (
 )
 
 ROBOT_TYPE = "ROBOCOIN.AgileX"
-DATA_ROOT = Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/RoboCOIN")
+DATA_ROOT = Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/RoboCOIN")
 NUM_WORKERS = 8
 SKIP_EXISTING = False
 OUTLIER_ABS_LIMIT = 6.2831852

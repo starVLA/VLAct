@@ -12,7 +12,7 @@ Examples:
     python scripts/robotwin_eval_progress.py --eval_dir results/Checkpoints/0317_robotwin_qwen3OFT_interna1_60k_unified_ft_lr_base/checkpoints/output_eval
 
     # 统计单个 RoboTwin 结果目录
-    python scripts/robotwin_eval_progress_sq.py --eval_dir /project/vonneumann1/wcy/code/starVLA-dev/results/Robotwin/0315_robotwin_qwen3OFT
+    python scripts/robotwin_eval_progress_sq.py --eval_dir /project/vonneumann1/wcy/copy/starVLA-VLAct/results/Robotwin/0315_robotwin_qwen3OFT
 
     # 统计整个 eval_result 根目录，默认每个 task 只取最新一次
     python scripts/robotwin_eval_progress_sq.py --eval_dir /project/vonneumann1/sqyang/project/EM-LLaVA/simulated_env/RoboTwin/eval_result

@@ -4139,7 +4139,7 @@ class LeRobotMixtureDataset(Dataset):
                         )
                     sample["action_valid_mask"] = action_valid_mask.astype(np.float32)
 
-                if self._should_prefix_control_frequency() or self._should_prefix_embodiment():
+                if self._should_prefix_embodiment():
                     instruction = self._format_instruction_with_prompt_prefixes(sample["lang"], dataset)
                     sample["lang"] = instruction
                     sample["language"] = instruction
@@ -4451,25 +4451,11 @@ class LeRobotMixtureDataset(Dataset):
                 original_metadata=dataset.metadata,
             )
 
-    def _should_prefix_control_frequency(self) -> bool:
-        behavior_cfg = self.data_cfg or {}
-        return str(behavior_cfg.get("action_target_mode", "legacy")).lower() == "delta_eef_velocity"
-
     def _should_prefix_embodiment(self) -> bool:
         behavior_cfg = self.data_cfg or {}
         return bool(behavior_cfg.get("prompt_prefix_embodiment", False))
 
-    def _format_instruction_with_control_frequency(self, instruction: str, dataset) -> str:
-        if not self._should_prefix_control_frequency():
-            return instruction
-        fps = dataset.lerobot_info_meta.get("fps", 1)
-        prefix = f"FPS: {fps:g}. "
-        if isinstance(instruction, str) and (instruction.startswith(prefix) or "FPS: " in instruction):
-            return instruction
-        return f"{prefix}{instruction}"
-
     def _format_instruction_with_prompt_prefixes(self, instruction: str, dataset) -> str:
-        instruction = self._format_instruction_with_control_frequency(instruction, dataset)
         return self._format_instruction_with_embodiment(instruction, dataset)
 
     def _format_instruction_with_embodiment(self, instruction: str, dataset) -> str:

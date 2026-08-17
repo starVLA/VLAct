@@ -33,7 +33,7 @@ from starVLA.dataloader.lerobot_datasets import (
     make_LeRobotSingleDataset,
 )
 
-DATA_ROOT = Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1")
+DATA_ROOT = Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1")
 TASK_LIST = DATA_ROOT / "franka_tasks.txt"
 ROBOT_TYPE = "interna1_franka_manualvel_50"
 NUM_WORKERS = 64

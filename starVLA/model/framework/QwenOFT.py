@@ -152,7 +152,7 @@ class Qwenvl_OFT(baseframework):
         batch_images = [example["image"] for example in examples]  #  [B，[PLT]]
         instructions = [example["lang"] for example in examples]  # [B, str]
         actions = [example["action"] for example in examples]  # label [B， len, 7]
-        robot_tags = [example.get("robot_tag") for example in examples]
+        robot_tags = [example.get("robot_tag") or example.get("robot_type") for example in examples]
         action_layout_tags = [example.get("robot_type", example.get("robot_tag")) for example in examples]
         action_valid_masks = [example.get("action_valid_mask") for example in examples]
         action_dim_valid_masks = [example.get("action_dim_valid_mask") for example in examples]
@@ -226,7 +226,7 @@ class Qwenvl_OFT(baseframework):
             action_dit_loss = self._compute_action_loss(
                 pred_actions,
                 actions_target,
-                action_layout_tags,
+                robot_tags,
                 action_valid_mask=action_valid_mask,
                 action_dim_valid_mask=action_dim_valid_mask,
             )

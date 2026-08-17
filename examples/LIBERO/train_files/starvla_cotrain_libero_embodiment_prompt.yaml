@@ -66,7 +66,7 @@ datasets:
     data_mix: libero_all # libero_goal
     action_type: delta_qpos
     sequential_step_sampling: False
-    CoT_prompt: "Robot: Franka, Action: Delta EEF. FPS: 10. Your task is {instruction}. To identify the key objects for your task. Locate their bounding boxes in [x1,y1,x2,y2] format."
+    CoT_prompt: "Robot: Franka, Action: Delta EEF. Your task is {instruction}. To identify the key objects for your task. Locate their bounding boxes in [x1,y1,x2,y2] format."
     CoT_answer: bbox
     default_image_resolution: [3, 224, 224]
     per_device_batch_size: 16

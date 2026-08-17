@@ -36,9 +36,9 @@ try:
 except Exception:
     tqdm = None
 
-DEFAULT_ROOT = Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/DROID")
+DEFAULT_ROOT = Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/DROID")
 DEFAULT_OUTPUT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/examples/DROID/out/droid_small_delta_eef_summary.json"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/examples/DROID/out/droid_small_delta_eef_summary.json"
 )
 ACTION_KEY = "action"
 POS_DIMS = (0, 1, 2)

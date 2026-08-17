@@ -14,7 +14,7 @@ import pandas as pd
 
 
 DEFAULT_ROOT = Path("/project/vonneumann1/datasets/InternData-A1/sim_updated")
-DEFAULT_OUT_DIR = Path("/project/vonneumann1/wcy/code/starVLA-dev/examples/InternA1/preprocess/check/out")
+DEFAULT_OUT_DIR = Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/examples/InternA1/preprocess/check/out")
 DEFAULT_SAMPLE_RATIO = 0.1
 DEFAULT_SEED = 42
 ACTION_COLUMNS = [

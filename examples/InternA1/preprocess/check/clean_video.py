@@ -401,8 +401,8 @@ if __name__ == "__main__":
 
 '''
 python clean_video.py \
-  --data-root /project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1 \
-  --output-json /project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1/clean_results/final_frame_errors_test.jsonl \
+  --data-root /project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1 \
+  --output-json /project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1/clean_results/final_frame_errors_test.jsonl \
   --subset sim_updated/pick_and_place_tasks/split_aloha/parallel_pick_and_place_right_right/parallel_pick_and_place_right_right/bowl \
   --model-path /project/vonneumann1/wcy/models/LLM/Qwen3.5-27B \
   --limit 20

@@ -295,6 +295,8 @@ class VLATrainer(TrainerUtils):
 
     def train(self):
         """Execute training loop."""
+        # from_pretrained 默认 eval 模式；不转 train 的话 gradient checkpointing 不生效
+        self.model.train()
         self._log_training_config()
         self._create_data_iterators()
         progress_bar = tqdm(

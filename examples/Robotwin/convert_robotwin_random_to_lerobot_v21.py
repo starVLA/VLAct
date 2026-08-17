@@ -10,9 +10,9 @@ existing `RoboTwin-Clean/<task>` datasets in this repository:
       meta/
 
 Example:
-    conda activate starVLA-dev
+    conda activate VLAct
     python examples/Robotwin/convert_robotwin_random_to_lerobot_v21.py \
-        --src-root /project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/RoboTwin-Random \
+        --src-root /project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/RoboTwin-Random \
         --dst-root /project/vonneumann1/datasets/RoboTwin-Random-v21
 
 Notes:
@@ -100,7 +100,7 @@ def parse_args() -> ConvertConfig:
     parser.add_argument(
         "--src-root",
         type=Path,
-        default=Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/RoboTwin-Random"),
+        default=Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/RoboTwin-Random"),
         help="Root of RoboTwin-Random raw task folders.",
     )
     parser.add_argument(

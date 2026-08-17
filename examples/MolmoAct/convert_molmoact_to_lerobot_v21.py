@@ -44,10 +44,10 @@ import tqdm
 
 
 DEFAULT_SRC_ROOT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/MolmoAct-Dataset"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/MolmoAct-Dataset"
 )
 DEFAULT_DST_ROOT = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/MolmoAct-Dataset"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/MolmoAct-Dataset"
 )
 SUBSET_TO_SOURCE_DIR = {
     "household": "molmoact_dataset_household/train",

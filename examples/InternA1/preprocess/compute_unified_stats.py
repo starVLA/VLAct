@@ -23,7 +23,7 @@ import pandas as pd
 
 DEFAULT_DATA_ROOT = "/project/vonneumann1/datasets/InternData-A1"
 DEFAULT_TASK_LIST = (
-    "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1/"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1/"
     "split_aloha_tasks.txt"
 )
 DEFAULT_NUM_WORKERS = 16

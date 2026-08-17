@@ -22,7 +22,7 @@ from starVLA.dataloader.gr00t_lerobot.schema import LeRobotModalityMetadata
 
 DATA_ROOT = Path("/project/vonneumann1/datasets/InternData-A1")
 TASK_LIST = (
-    Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1")
+    Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1")
     / "franka_tasks.txt"
 )
 NUM_WORKERS = 64

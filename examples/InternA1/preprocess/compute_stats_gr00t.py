@@ -23,7 +23,7 @@ from starVLA.dataloader.gr00t_lerobot.datasets import (
 from starVLA.dataloader.gr00t_lerobot.schema import LeRobotModalityMetadata
 
 DATA_ROOT = "/project/vonneumann1/datasets/InternData-A1"
-TASK_LIST = "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/InternData-A1/split_aloha_tasks.txt"
+TASK_LIST = "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/InternData-A1/split_aloha_tasks.txt"
 NUM_WORKERS = 64
 ROBOT_TYPE = "split_aloha"
 

@@ -5,6 +5,7 @@
 import logging
 import socket
 import argparse
+from accelerate import PartialState
 from deployment.model_server.tools.websocket_policy_server import WebsocketPolicyServer
 from starVLA.model.framework.base_framework import baseframework
 import torch, os
@@ -15,6 +16,8 @@ def main(args) -> None:
     # policy = YourPolicyClass()  # Replace with your actual policy class
     # server = WebsocketPolicyServer(policy, host="localhost", port=10091)
     # server.serve_forever()
+
+    PartialState()  # model modules log via accelerate.logging, which requires an initialized state
 
     vla = baseframework.from_pretrained( # TODO should auto detect framework from model path
         args.ckpt_path,

@@ -47,7 +47,7 @@ from starVLA.dataloader.lerobot_datasets import (
 )
 
 
-DATA_ROOT = Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/MolmoAct-Dataset")
+DATA_ROOT = Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/MolmoAct-Dataset")
 DEFAULT_DATASETS = ["molmoact_household_v21", "molmoact_tabletop_v21"]
 DEFAULT_ROBOT_TYPES = [
     "molmoact_franka_exterior1_wrist_manualvel_50",

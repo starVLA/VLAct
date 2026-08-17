@@ -529,6 +529,14 @@ class QwenHybrid_xrobot_padding(baseframework):
         qwen_inputs = self.qwen_vl_interface.build_qwenvl_inputs(
             images=batch_images, instructions=instructions
         )
+        if __import__("os").environ.get("MEMDBG") == "1":
+            import torch.distributed as _dist
+            if not _dist.is_initialized() or _dist.get_rank() == 0:
+                print(
+                    f"[MEMDBG] input_ids={tuple(qwen_inputs['input_ids'].shape)} "
+                    f"n_images_per_sample={[len(x) for x in batch_images]}",
+                    flush=True,
+                )
         with torch.autocast("cuda", dtype=torch.bfloat16):
             qwenvl_outputs = self.qwen_vl_interface(
                 **qwen_inputs,

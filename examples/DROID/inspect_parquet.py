@@ -8,7 +8,7 @@ import pandas as pd
 
 
 DEFAULT_PARQUET = Path(
-    "/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/DROID/data/chunk-000/episode_000000.parquet"
+    "/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/DROID/data/chunk-000/episode_000000.parquet"
 )
 
 

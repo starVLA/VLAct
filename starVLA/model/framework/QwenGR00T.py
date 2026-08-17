@@ -80,6 +80,14 @@ class Qwen_GR00T(baseframework):
         self.chunk_len = self.past_action_window_size + 1 + self.future_action_window_size
         
 
+    def _get_repeated_diffusion_steps(self) -> int:
+        ac = getattr(getattr(self.config, "framework", None), "action_model", None)
+        if ac is not None:
+            v = getattr(ac, "repeated_diffusion_steps", None)
+            if v is not None:
+                return int(v)
+        return 4
+
     def forward(
         self,
         examples: List[dict] = None,
@@ -114,9 +122,7 @@ class Qwen_GR00T(baseframework):
             )  # [B, T_full, action_dim]
             actions_target = actions[:, -(self.future_action_window_size+1):, :]  # (B, chunk_len, action_dim)
 
-            repeated_diffusion_steps = (
-                self.config.trainer.get("repeated_diffusion_steps", 4) if self.config and self.config.trainer else 4
-            )
+            repeated_diffusion_steps = self._get_repeated_diffusion_steps()
             actions_target_repeated = actions_target.repeat(repeated_diffusion_steps, 1, 1)
             last_hidden_repeated = last_hidden.repeat(repeated_diffusion_steps, 1, 1)
             
@@ -155,8 +161,9 @@ class Qwen_GR00T(baseframework):
     
         state = [example["state"] for example in examples] if "state" in examples[0] else None  # [B, 1, state_dim]
         
+        image_size_buckets = getattr(self.config.datasets.vla_data, "image_size_buckets", None)
         train_obs_image_size = getattr(self.config.datasets.vla_data, "image_size", None)
-        if train_obs_image_size:
+        if image_size_buckets is None and train_obs_image_size:
             batch_images = resize_images(batch_images, target_size=train_obs_image_size)
     
         # Step 1: QWenVL input format

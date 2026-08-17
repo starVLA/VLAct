@@ -46,7 +46,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dataset-dir",
         type=Path,
-        default=Path("/project/vonneumann1/wcy/code/starVLA-dev/playground/Datasets/DROID"),
+        default=Path("/project/vonneumann1/wcy/copy/starVLA-VLAct/playground/Datasets/DROID"),
     )
     parser.add_argument("--num-workers", type=int, default=8)
     parser.add_argument(
