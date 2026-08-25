@@ -1,3 +1,32 @@
+<div align="center">
+
+# VLAct
+
+### Beyond Data Scaling: Representation-Centric Pre-training for Vision-Language-Action Models
+
+[**🌐 Project Page**](https://starvla.github.io/VLAct) &nbsp;·&nbsp;
+[**📄 Paper**](https://starvla.github.io/VLAct/static/VLAct_paper.pdf) &nbsp;·&nbsp;
+[**⌘ StarVLA codebase**](https://github.com/starVLA/starVLA)
+
+</div>
+
+This repository holds the training and evaluation code for **VLAct**, built on the
+[StarVLA](https://github.com/starVLA/starVLA) codebase. VLAct is a VLA-oriented VLM backbone
+trained with a representation-centric pre-training recipe: it preserves the broad VLM prior,
+co-supervises multiple continuous action heads (OFT, PI, GR00T) from one shared latent, and
+shares action semantics across embodiments through a partially unified cross-embodiment action
+layout with a wrap-aware loss for periodic joints.
+
+| LIBERO-Plus | VLA-Arena | RoboTwin 2.0 | DOMINO | RoboCasa-GR1 (unseen) |
+| :---: | :---: | :---: | :---: | :---: |
+| **82.6%** | **53.4%** | **92.5%** | **18.50** SR | **54.0%** |
+
+All results use fully open-source pre-training data and a 16-GPU setup.
+
+> The documentation below is the upstream StarVLA README that this codebase builds on.
+
+---
+
 # StarVLA: A Lego-like Codebase for Vision-Language-Action Model Developing
 Collecting, integrating, and exploring cutting-edge technologies for generalist robots.
 
