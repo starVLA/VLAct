@@ -324,6 +324,22 @@ h4 {
   color: #1f3555;
 }
 
+/* Keep name links subtle — a header of 15 blue links reads as noise. */
+.author-list a,
+.author-role a {
+  border-bottom: 1px solid rgba(23, 59, 120, 0.26);
+  color: inherit;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.author-list a:hover,
+.author-role a:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
 .author-note {
   margin: 0.45rem 0 0;
   color: var(--muted);
