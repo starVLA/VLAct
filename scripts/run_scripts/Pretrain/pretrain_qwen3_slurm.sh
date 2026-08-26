@@ -35,11 +35,11 @@ for layer_idx in $(seq 0 17); do
   freeze_module_list+=" ,qwen_vl_interface.model.language_model.layers.${layer_idx}"
 done
 freeze_module_list=${freeze_module_list// ,/,}
-base_vlm=StarVLA/Qwen3-VL-4B-Instruct-Action
+base_vlm=StarVLA/Qwen3-VL-4B-Instruct
 config_yaml=./examples/InternA1/train_files/starvla_cotrain_agilex_franka_50_padding.yaml
 data_root_dir=./playground/Datasets
 run_root_dir=./results/Checkpoints
-data_mix=agilex_franka_5data_manualvel_balance33_66_50
+data_mix=agilex_franka_5data_manualvel_balance_50
 vlm_coco_data=${VLM_COCO_DATA:-./playground/Datasets/LLaVA-OneVision-COCO/llava_jsons/sharegpt4v_coco.json::./playground/Datasets/LLaVA-OneVision-COCO/images}
 vlm_cc3m_data=${VLM_CC3M_DATA:-./playground/Datasets/LLaVA-ReCap-CC3M/data}
 vlm_coco_repeat=5
@@ -51,7 +51,7 @@ vlm_data+=,${vlm_cc3m_data}
 image_size_buckets='[[320,180],[280,210]]'
 heads=oft,gr00t,pi
 head_loss_weights=oft:1,gr00t:1,pi:1
-run_id=qwen3_pretrain
+run_id=vlact_qwen3_pretrain
 ###########################################################################################
 
 export WANDB_MODE=disabled

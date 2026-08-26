@@ -9,13 +9,13 @@ export NCCL_TIMEOUT=1000  # timeout set to 1 hour (unit: seconds)
 # === Please modify the following paths according to your environment ===
 Framework_name=QwenPI_v4
 freeze_module_list=''
-base_vlm=StarVLA/Qwen3-VL-4B-Instruct-Action
+base_vlm=StarVLA/Qwen3-VL-4B-Instruct
 config_yaml=./examples/LIBERO/train_files/starvla_cotrain_libero_embodiment_prompt.yaml
 libero_data_root=playground/Datasets/LEROBOT_LIBERO_DATA
 data_mix=libero_all
 run_root_dir=./results/Checkpoints
 run_id=vlact_libero_all_qwen3pi
-pretrained_ckpt=./results/Checkpoints/qwen3_pretrain/checkpoints/steps_100000_pytorch_model.pt
+pretrained_ckpt=./results/Checkpoints/vlact_qwen3_pretrain/checkpoints/steps_100000_pytorch_model.pt
 # === End of environment variable configuration ===
 ###########################################################################################
 

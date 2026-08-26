@@ -605,7 +605,7 @@ _agilex_franka_franka_entries_50 = DATASET_NAMED_MIXTURES.get(
     "droid_droid100_molmoact_all_manualvel_strict_50", []
 )
 _agilex_franka_non_franka_mass_50 = _weighted_sampling_mass(_agilex_franka_non_franka_entries_50)
-DATASET_NAMED_MIXTURES["agilex_franka_5data_manualvel_balance33_66_50"] = (
+DATASET_NAMED_MIXTURES["agilex_franka_5data_manualvel_balance_50"] = (
     _agilex_franka_non_franka_entries_50
     + _balance_entries_to_mass(
         _agilex_franka_franka_entries_50,

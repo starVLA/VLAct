@@ -9,7 +9,7 @@ export NCCL_TIMEOUT=1000  # timeout set to 1 hour (unit: seconds)
 # === Please modify the following paths according to your environment ===
 Framework_name=QwenOFT
 freeze_module_list=''
-base_vlm=StarVLA/Qwen3-VL-4B-Instruct-Action
+base_vlm=StarVLA/Qwen3-VL-4B-Instruct
 config_yaml=./examples/Robotwin/train_files/starvla_cotrain_robotwin_abs_embodiment_prompt.yaml
 data_root_dir=./playground/Datasets/RoboTwin-All
 run_root_dir=./results/Checkpoints
@@ -18,7 +18,7 @@ action_chunk_size=32
 future_action_window_size=31
 image_size_buckets='[[320,180],[280,210]]'
 run_id=vlact_robotwin_all_qwen3oft
-pretrained_ckpt=./results/Checkpoints/qwen3_pretrain/checkpoints/steps_100000_pytorch_model.pt
+pretrained_ckpt=./results/Checkpoints/vlact_qwen3_pretrain/checkpoints/steps_100000_pytorch_model.pt
 # === End of environment variable configuration ===
 ###########################################################################################
 
