@@ -22,7 +22,7 @@ data_mix=fourier_gr1_unified_1000
 # data_mix=fourier_gr1_10K_pretrain
 
 run_root_dir=./playground/Checkpoints
-run_id=starvla_qwenGR00T_fourier_gr1_unified_1000_withState
+run_id=vlact_qwenGR00T_fourier_gr1_unified_1000_withState
 
 export WANDB_MODE=disabled
 
