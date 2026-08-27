@@ -1,23 +1,25 @@
-# VLAct — project page (`gh-pages`)
+# VLAct project page
 
-This branch serves <https://starvla.github.io/VLAct>. It contains **only** the static site;
-the VLAct code lives on the `main` branch.
+This is a dependency-free project page built with HTML, CSS, and JavaScript. It can be deployed directly with GitHub Pages.
 
-```
-index.html                 the page
-static/css/styles.css      styles
-static/js/script.js        demo carousels, comparison players, nav scroll-spy
-static/figures/            figures rendered from the paper source
-static/videos/             real-robot rollout clips
-static/VLAct_paper.pdf     the paper
-.nojekyll                  serve files verbatim (no Jekyll processing)
-```
+## Preview locally
 
-Preview locally:
+From the repository root:
 
 ```bash
-git switch gh-pages
-python3 -m http.server 8000    # then open http://localhost:8000
+python3 -m http.server 8000
 ```
 
-GitHub Pages is configured as: **Settings → Pages → Deploy from a branch → `gh-pages` / `(root)`**.
+Then open `http://localhost:8000/website/`.
+
+## Deployment
+
+The directory is self-contained and can be published as a GitHub Pages artifact or copied into a dedicated `VLAct` Pages repository.
+
+`assets/VLAct.pdf` is a snapshot of `out/StarVLA.pdf`; refresh it whenever the manuscript changes. The real-robot gallery uses 13 H.264 rollout sources under `assets/videos/`; three derived portrait crops remove baked-in sidebars while retaining the original MP4s. Gallery posters live under `assets/video-posters/`.
+
+The checkpoint section uses the verified public VLAct collection and presents the backbone and four downstream repositories as released checkpoints. At the time of the August 27, 2026 audit, RoboDojo and RoboTwin GR00T contained downloadable weights; populate the continued-pretraining, VLA-Arena, and LIBERO-Plus repositories before public deployment.
+
+See `CLAIMS.md` for the source and scope of every headline number used on the page.
+
+Canonical and social-preview URLs target `https://starvla.github.io/VLAct/`; that address must be deployed before the page is publicly shared.

@@ -1,1347 +1,741 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="VLAct: a representation-centric pre-training recipe that turns a fixed robot-data budget into a transferable Vision-Language-Action backbone. 82.6% on LIBERO-Plus, 53.4% on VLA-Arena, 92.5% on RoboTwin 2.0, with fully open-source data and 16 GPUs."
+      content="VLAct studies how representation-centric pre-training can make VLM backbones stronger foundations for action in the physical world."
     />
-    <meta
-      name="author"
-      content="Senqiao Yang, Chengyao Wang, Yuxin Chen, Zixuan Wang, Longxiang Tang, Haokun Gui, Jinhui Ye, Changsheng Lu, Xiaoyang Wu, Mingkang Zhu"
-    />
-    <meta name="theme-color" content="#173b78" />
-    <link rel="canonical" href="https://starvla.github.io/VLAct/" />
-    <link rel="icon" type="image/svg+xml" href="./static/favicon.svg" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://starvla.github.io/VLAct/" />
-    <meta
-      property="og:title"
-      content="VLAct — Beyond Data Scaling: Representation-Centric Pre-training for Vision-Language-Action Models"
-    />
+    <meta name="theme-color" content="#f4f1e8" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="VLAct — Beyond Data Scaling" />
     <meta
       property="og:description"
-      content="Representation-centric VLA pre-training: preserve the VLM prior, co-supervise multiple continuous action heads, and share action semantics across embodiments."
+      content="Make every robot trajectory teach more—and ask what makes a VLM backbone a strong foundation for action in the physical world."
     />
-    <meta property="og:image" content="https://starvla.github.io/VLAct/static/figures/teaser.png" />
+    <meta property="og:url" content="https://starvla.github.io/VLAct/" />
+    <meta property="og:image" content="https://starvla.github.io/VLAct/assets/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="VLAct — Beyond Data Scaling: Representation-Centric Pre-training for Vision-Language-Action Models" />
+    <meta property="og:site_name" content="VLAct" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="VLAct — Beyond Data Scaling: Representation-Centric VLA Pre-training"
-    />
+    <meta name="twitter:title" content="VLAct — Beyond Data Scaling" />
     <meta
       name="twitter:description"
-      content="82.6% LIBERO-Plus, 53.4% VLA-Arena, 92.5% RoboTwin 2.0 — with fully open-source data and a 16-GPU setup."
+      content="What makes a VLM backbone a strong foundation for action in the physical world? VLAct looks beyond data scaling."
     />
-    <meta name="twitter:image" content="https://starvla.github.io/VLAct/static/figures/teaser.png" />
-
-    <title>VLAct | Beyond Data Scaling: Representation-Centric VLA Pre-training</title>
-    <link rel="stylesheet" href="./static/css/styles.css" />
+    <meta name="twitter:image" content="https://starvla.github.io/VLAct/assets/og-card.png" />
+    <link rel="canonical" href="https://starvla.github.io/VLAct/" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>VLAct — Beyond Data Scaling</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ScholarlyArticle",
+        "headline": "Beyond Data Scaling: Representation-Centric Pre-training for Vision-Language-Action Models",
+        "url": "https://starvla.github.io/VLAct/",
+        "image": "https://starvla.github.io/VLAct/assets/og-card.png",
+        "author": [
+          { "@type": "Person", "name": "Senqiao Yang" },
+          { "@type": "Person", "name": "Chengyao Wang" },
+          { "@type": "Person", "name": "Yuxin Chen" },
+          { "@type": "Person", "name": "Zixuan Wang" },
+          { "@type": "Person", "name": "Longxiang Tang" },
+          { "@type": "Person", "name": "Haokun Gui" },
+          { "@type": "Person", "name": "Jinhui Ye" },
+          { "@type": "Person", "name": "Changsheng Lu" },
+          { "@type": "Person", "name": "Xiaoyang Wu" },
+          { "@type": "Person", "name": "Mingkang Zhu" }
+        ],
+        "description": "VLAct studies how representation-centric pre-training can make VLM backbones stronger foundations for action in the physical world."
+      }
+    </script>
   </head>
   <body>
-    <a class="skip-link" href="#abstract">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
-    <nav class="site-nav" aria-label="Section navigation">
-      <div class="site-nav-inner">
-        <span class="site-nav-mark">VLAct</span>
-        <div class="site-nav-links">
-          <a href="#abstract">Abstract</a>
-          <a href="#highlights">Highlights</a>
-          <a href="#motivation">Motivation</a>
-          <a href="#pilot">Pilot Study</a>
-          <a href="#method">Method</a>
-          <a href="#results">Results</a>
-          <a href="#transfer">Unseen Embodiments</a>
-          <a href="#real-world">Real Robots</a>
-          <a href="#demos">Demos</a>
-          <a href="#ablations">Ablations</a>
-          <a href="#bibtex">BibTeX</a>
-        </div>
-      </div>
-    </nav>
+    <header class="site-header" data-header>
+      <a class="wordmark" href="#top" aria-label="VLAct home">
+        <span class="wordmark-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span>VLAct</span>
+      </a>
 
-    <main class="page-shell">
-      <header class="hero" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow">Representation-Centric VLA Pre-training</p>
-          <h1 id="page-title" class="paper-title">
-            <span class="title-main">Beyond Data Scaling</span>
-            <span class="title-sub">
-              Representation-Centric Pre-training for Vision-Language-Action Models
-              <span class="model-chip">VLAct</span>
-            </span>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Toggle navigation</span>
+        <span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+        <a href="#story">Story</a>
+        <a href="#method">Method</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#real-world">Real world</a>
+        <a href="#open">Models</a>
+        <a class="nav-paper" href="assets/VLAct.pdf">Paper <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" id="top" data-section>
+        <div class="hero-aura hero-aura-one" aria-hidden="true"></div>
+        <div class="hero-aura hero-aura-two" aria-hidden="true"></div>
+
+        <div class="hero-copy reveal">
+          <p class="eyebrow"><span>VLAct project page</span><span>Technical report</span><span>August 2026</span></p>
+          <h1>
+            <span class="hero-title-main">Beyond Data Scaling:</span>
+            <span class="hero-title-sub">Representation-Centric Pre-training for Vision-Language-Action Models</span>
           </h1>
 
-          <div class="author-block">
-            <p class="author-list">
-              <span><a href="https://senqiaoyang.com/" target="_blank" rel="noopener">Senqiao Yang</a><sup>†</sup></span>
-              <span><a href="https://wcy1122.github.io/" target="_blank" rel="noopener">Chengyao Wang</a><sup>†</sup></span>
-              <span><a href="https://scholar.google.com/citations?user=fyewGpgAAAAJ&amp;hl=en" target="_blank" rel="noopener">Yuxin Chen</a></span>
-              <span><a href="https://vincent2311.github.io/" target="_blank" rel="noopener">Zixuan Wang</a></span>
-              <span><a href="https://scholar.google.com/citations?user=3oMQsq8AAAAJ&amp;hl=en" target="_blank" rel="noopener">Longxiang Tang</a></span>
-              <span><a href="https://haokungui.github.io/" target="_blank" rel="noopener">Haokun Gui</a></span>
-              <span><a href="https://jhuiye.com/" target="_blank" rel="noopener">Jinhui Ye</a></span>
-              <span><a href="https://alanlusun.github.io/" target="_blank" rel="noopener">Changsheng Lu</a></span>
-              <span><a href="https://xywu.me/" target="_blank" rel="noopener">Xiaoyang Wu</a></span>
-              <span><a href="https://scholar.google.com/citations?user=NL6EJ20AAAAJ" target="_blank" rel="noopener">Mingkang Zhu</a></span>
+          <div class="hero-credits" role="group" aria-label="Project contributors">
+            <p class="credit-row">
+              <span class="credit-label">Core Contributors</span>
+              <span class="credit-names">
+                Senqiao Yang<sup>†</sup>, Chengyao Wang<sup>†</sup>, Yuxin Chen, Zixuan Wang,
+                Longxiang Tang, Haokun Gui, Jinhui Ye, Changsheng Lu, Xiaoyang Wu, Mingkang Zhu
+                <small>† Project Leaders</small>
+              </span>
             </p>
-            <p class="author-role">
-              <strong>Advisors:</strong>
-              <a href="https://scholar.google.com/citations?user=lMnVrgIAAAAJ" target="_blank" rel="noopener">Pengguang Chen</a> &middot; <a href="https://scholar.google.com/citations?user=BUEDUFkAAAAJ&amp;hl=en" target="_blank" rel="noopener">Shu Liu</a><sup>✉</sup> &middot; <a href="https://tianzhuotao.github.io/" target="_blank" rel="noopener">Zhuotao Tian</a> &middot;
-              <a href="https://www.cs.hku.hk/~hszhao/" target="_blank" rel="noopener">Hengshuang Zhao</a> &middot; <a href="https://www.cse.cuhk.edu.hk/~byu/" target="_blank" rel="noopener">Bei Yu</a> &middot; <a href="https://jiaya.me/home" target="_blank" rel="noopener">Jiaya Jia</a>
-            </p>
-            <p class="author-note">
-              <sup>†</sup> Project leaders &nbsp;&middot;&nbsp; <sup>✉</sup> Corresponding Authors
+            <p class="credit-row">
+              <span class="credit-label">Advisors</span>
+              <span class="credit-names">Pengguang Chen, Shu Liu, Zhuotao Tian, Hengshuang Zhao, Bei Yu, Jiaya Jia</span>
             </p>
           </div>
 
-          <nav class="link-row" aria-label="Project resources">
-            <a class="primary" href="./static/VLAct_paper.pdf" target="_blank" rel="noopener">
-              <span class="link-icon" aria-hidden="true">📄</span> Paper (PDF)
+          <div class="hero-statement">
+            <p class="hero-slogan">
+              Make every robot trajectory <em>teach more.</em>
+            </p>
+            <p class="hero-community">
+              We hope to put a deeper question at the center of VLA research:
+              <strong>what makes a VLM backbone a strong foundation for action in the physical world?</strong>
+            </p>
+          </div>
+          <p class="hero-lede">
+            VLAct focuses pre-training on the representation itself: preserving broad VLM priors,
+            learning beyond a single action head, and sharing physical semantics across embodiments.
+          </p>
+
+          <nav class="hero-actions hero-resource-actions" aria-label="Project resources">
+            <a class="button button-primary" href="assets/VLAct.pdf">
+              Read the paper
+              <span aria-hidden="true">↗</span>
             </a>
-            <a href="https://github.com/starVLA/VLAct" target="_blank" rel="noopener">
-              <span class="link-icon" aria-hidden="true">★</span> Project Repo
+            <a class="button button-secondary" href="https://github.com/starVLA/VLAct" target="_blank" rel="noreferrer">
+              Code <span aria-hidden="true">↗</span>
             </a>
-            <a href="https://github.com/starVLA/starVLA" target="_blank" rel="noopener">
-              <span class="link-icon" aria-hidden="true">⌘</span> StarVLA Codebase
+            <a class="button button-secondary" href="https://youtu.be/aTrIbDQ7a2o" target="_blank" rel="noreferrer">
+              Video <span aria-hidden="true">↗</span>
             </a>
-            <span class="link-pill">arXiv <small>coming soon</small></span>
-            <span class="link-pill">Checkpoints <small>coming soon</small></span>
-            <a href="#bibtex"><span class="link-icon" aria-hidden="true">❝</span> BibTeX</a>
+            <a class="button button-secondary" href="#open">
+              Models <span aria-hidden="true">↓</span>
+            </a>
+            <a class="button button-secondary" href="https://github.com/starVLA/VLAct/blob/main/scripts/run_scripts/Pretrain/README.md" target="_blank" rel="noreferrer">
+              Dataset <span aria-hidden="true">↗</span>
+            </a>
           </nav>
         </div>
 
-        <figure class="paper-figure hero-figure">
-          <img
-            class="paper-figure-media"
-            src="./static/figures/teaser.png"
-            alt="Overview of VLAct: naive VLA pre-training overfits to the pre-training scenario and generalizes poorly to new tasks, environments, embodiments, and action heads, while VLAct's representation-centric pre-training preserves the VLM representation, uses multi-head supervision, and a unified action representation, yielding stronger simulation and real-robot results."
-            width="2200"
-            height="954"
-            decoding="async"
-          />
-          <figcaption>
-            <strong>Overview of VLAct.</strong> VLAct adopts representation-centric pre-training to
-            learn generalizable action-aware representations across tasks, embodiments,
-            environments, and action heads.
-          </figcaption>
-        </figure>
-      </header>
-
-      <!-- ============================================================ ABSTRACT -->
-      <section class="section" id="abstract" aria-labelledby="abstract-title">
-        <div class="section-heading">
-          <h2 id="abstract-title">Abstract</h2>
-        </div>
-        <div class="abstract-grid">
-          <article class="abstract-card">
-            <p>
-              Scaling robot data is crucial for building generalist Vision-Language-Action (VLA)
-              models, yet robot trajectories are fundamentally harder to scale than web-scale
-              image-text data because they require embodied collection and sparsely cover the
-              physical world. This makes representation quality a central bottleneck: under a fixed
-              robot-data budget, VLA pre-training must convert limited trajectories into
-              transferable visual-action knowledge, rather than merely fit actions.
-            </p>
-            <p>
-              We propose <strong>VLAct</strong>, a VLA-oriented VLM backbone trained with a
-              representation-centric pre-training recipe. VLAct preserves the broad VLM prior,
-              avoids over-specializing the backbone to a single action head, and encourages shared
-              action semantics across embodiments through VLM-prior preservation, multi-head
-              continuous action co-supervision, and a partially unified cross-embodiment action
-              layout, while leaving downstream users free to attach task-specific action heads
-              during fine-tuning.
-            </p>
-            <p>
-              Across multi-embodiment simulation benchmarks, real-world robot experiments, and
-              unseen-embodiment transfer, VLAct consistently improves downstream performance under
-              fixed fine-tuning protocols. On LIBERO-Plus and RoboTwin&nbsp;2.0, VLAct surpasses
-              large-scale industrial VLA systems such as ABot-M0 and LingBot-VLA, achieving 82.6%
-              and 92.5% success, respectively. On the recently published RoboDojo simulation
-              benchmark, VLAct achieves a 10.66 average score and 7.60% success rate, ranking sixth
-              among all policies by success rate. It outperforms all explicitly designated
-              world-action-model (WAM) entries on both metrics, as well as several
-              industry-developed systems. Most notably, on RoboCasa-GR1, a humanoid embodiment
-              never seen during pre-training, <strong>VLAct with only 20% of downstream
-              trajectories already outperforms the full-data GR00T-N1.6 baseline.</strong> These
-              results are obtained using fully open-source data and only a <strong>16-GPU</strong>
-              training setup, showing that representation-centric pre-training can deliver highly
-              competitive performance under a modest compute budget and is an important independent
-              axis of VLA progress beyond data scaling.
-            </p>
-            <p>All models and training pipelines will be open-sourced.</p>
-          </article>
-        </div>
-      </section>
-
-      <!-- =========================================================== HIGHLIGHTS -->
-      <section class="section" id="highlights" aria-labelledby="highlights-title">
-        <div class="section-heading">
-          <h2 id="highlights-title">Highlights at a Glance</h2>
-        </div>
-        <div class="highlight-grid">
-          <article class="highlight-card">
-            <span class="highlight-tag">H1</span>
-            <h3>Representation-centric pre-training</h3>
-            <p>
-              VLAct preserves VLM priors, diversifies action-head supervision, and shares action
-              semantics across embodiments.
-            </p>
-          </article>
-          <article class="highlight-card">
-            <span class="highlight-tag">H2</span>
-            <h3>Strong across benchmarks</h3>
-            <p>
-              VLAct reaches <strong>82.6%</strong> on LIBERO-Plus, <strong>53.4%</strong> on
-              VLA-Arena, and <strong>92.5%</strong> on RoboTwin&nbsp;2.0.
-            </p>
-          </article>
-          <article class="highlight-card">
-            <span class="highlight-tag">H3</span>
-            <h3>Data-efficient embodiment transfer</h3>
-            <p>
-              With only <strong>20%</strong> of RoboCasa-GR1 trajectories, VLAct reaches
-              <strong>49.5%</strong>, exceeding full-data GR00T-N1.6 at 47.6%.
-            </p>
-          </article>
-          <article class="highlight-card">
-            <span class="highlight-tag">H4</span>
-            <h3>Open and efficient scaling</h3>
-            <p>
-              With open data and <strong>16 GPUs</strong>, VLAct ranks sixth of 35 policies by
-              RoboDojo success and beats every designated WAM on both metrics.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <!-- =========================================================== MOTIVATION -->
-      <section class="section blog-section" id="motivation" aria-labelledby="motivation-title">
-        <div class="section-heading">
-          <h2 id="motivation-title">Why look beyond data scaling?</h2>
-        </div>
-        <article class="narrative-card">
-          <p>
-            Scaling data, model size, and training compute has been a central driver behind modern
-            foundation models. In language and vision, this scaling paradigm succeeds not simply
-            because web-scale corpora are large, but because they provide broad coverage of visual
-            and semantic variation. VLA models naturally aspire to the same paradigm: more robot
-            trajectories should, in principle, support more generalist robot policies. Yet robot
-            learning faces a qualitatively different scaling bottleneck.
-          </p>
-          <p>
-            Robot trajectories cannot be scraped from the web. They must be produced through
-            embodied execution in the physical world, often under human teleoperation or carefully
-            designed data-collection protocols. More importantly, the space that robot policies
-            must generalize over is combinatorial and continuous, spanning scenes, objects, task
-            goals, embodiments, and contact-rich dynamics. As a result, even very large robot
-            datasets remain sparse samples of the physical interaction space.
-          </p>
-          <p class="question-callout">
-            Given a fixed robot-data budget, how can VLA pre-training learn strong representations
-            that generalize beyond the trajectories on which they were trained?
-          </p>
-          <p>
-            This paper takes a representation-centric view of VLA pre-training. Rather than
-            treating robot pre-training merely as large-scale action fitting, we view it as a
-            process of distilling robot trajectories into reusable visual-action knowledge within
-            the backbone. A useful VLA backbone should not only predict the actions observed in the
-            pre-training data, but also internalize transferable priors about objects, affordances,
-            spatial relations, and action-conditioned physical interactions that downstream
-            policies can reuse across new tasks, scenes, and embodiments.
-          </p>
-          <p>
-            We identify <strong>three failure modes in naive VLA pre-training</strong>. First,
-            because robot trajectories are much narrower than the web-scale corpora used to train
-            VLMs, full end-to-end updating can erode broadly useful vision-language features.
-            Second, supervision from a single action head can over-specialize the backbone to that
-            head's decoding geometry, limiting transfer to alternative heads. Third,
-            embodiment-specific output spaces can weaken cross-embodiment sharing by representing
-            physically comparable actions, such as gripper opening and closing, through isolated
-            robot-specific heads.
-          </p>
-        </article>
-
-        <div class="insight-grid">
-          <article>
-            <span>01</span>
-            <h3>Preserve the VLM prior</h3>
-            <p>
-              VLAct preserves the VLM prior through shallow-layer protection and caption-data
-              mixing.
-            </p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Reduce head specialization</h3>
-            <p>
-              VLAct prevents single-head over-specialization through multi-head continuous action
-              co-supervision.
-            </p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Share embodiment semantics</h3>
-            <p>
-              VLAct encourages shared action semantics through a partially unified
-              cross-embodiment action layout with a wrap-aware loss for periodic joints.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <!-- ================================================================ PILOT -->
-      <section class="section blog-section" id="pilot" aria-labelledby="pilot-title">
-        <div class="section-heading">
-          <h2 id="pilot-title">Pilot Study: How Action Supervision Shapes VLA Backbones</h2>
-        </div>
-        <article class="narrative-card">
-          <p>
-            A central goal of VLA pre-training is to produce a reusable backbone, rather than a
-            policy initialization tied to one particular action head. In practice there is no
-            universally optimal action head: discrete token heads (FAST), regression heads (OFT),
-            flow-matching heads (PI), and diffusion-style continuous heads (GR00T) impose different
-            inductive biases. We isolate this action-head axis through controlled pilot experiments
-            on LIBERO-Plus and the RoboTwin-Clean setting. Fixing the VLM backbone to
-            Qwen3-VL-4B, we vary the action head used during pre-training and fine-tuning, and test
-            how different heads reshape the resulting backbone.
-          </p>
-
-          <article class="wide-result-card">
-            <figure class="paper-figure">
-              <img
-                class="paper-figure-media"
-                src="./static/figures/pilot_head_transfer.png"
-                alt="Bar chart. On LIBERO-Plus, FAST pre-training followed by FAST fine-tuning reaches 45.2 versus 61.4 from scratch, while FAST pre-training followed by a GR00T head reaches 76.7 versus 75.9 from scratch. On RoboTwin, OFT pre-training followed by OFT fine-tuning reaches 75.8 versus 61.7 from scratch, but the same OFT-pretrained backbone drops to 55.1 with a PI head and 28.9 with a GR00T head."
-                width="2000"
-                height="702"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-            <div class="wide-result-copy">
-              <h3>Action supervision reshapes VLA backbone representations</h3>
-              <p>
-                Keeping the VLM backbone fixed, we vary the action head used during pre-training
-                and fine-tuning. Discrete FAST supervision can transfer to a continuous GR00T head,
-                but retaining the FAST head suffers from discretization-induced information loss.
-                Continuous OFT supervision improves same-head fine-tuning, but transfers poorly to
-                other continuous heads, suggesting head-specific representation collapse rather
-                than a generally reusable action representation.
-              </p>
+        <div class="hero-visual reveal" data-tilt>
+          <div class="visual-browser">
+            <div class="visual-browser-bar" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <p>representation / generalization</p>
             </div>
-          </article>
-
-          <div class="recipe-grid dense-grid" aria-label="Pilot study findings">
-            <article>
-              <h3>Discrete supervision transfers, but loses information</h3>
-              <p>
-                FAST supervision can inject transferable structure into the backbone: paired with a
-                continuous GR00T head, it slightly improves over from-scratch GR00T fine-tuning
-                (<strong>76.7</strong> vs. 75.9). But retaining the FAST head performs far worse
-                than continuous-head fine-tuning (<strong>45.2</strong> against 75.9 for a
-                from-scratch GR00T head), and FAST pre-training does not close that gap — it even
-                falls below a FAST head trained from scratch (61.4). Discrete action tokens teach
-                coarse action structure while losing the fine-grained temporal and amplitude
-                information that matters for manipulation.
-              </p>
-            </article>
-            <article>
-              <h3>Single-head continuous supervision collapses the geometry</h3>
-              <p>
-                OFT pre-training substantially improves downstream performance when the fine-tuning
-                head is also OFT (<strong>75.8</strong> vs. 61.7). This gain does not transfer: the
-                same backbone drops to <strong>55.1</strong> with a PI head and
-                <strong>28.9</strong> with a GR00T head. Action information may remain present, but
-                organized in a head-specific form other decoders cannot easily read. Strong
-                same-head performance therefore overstates backbone reusability.
-              </p>
-            </article>
-          </div>
-
-          <p class="takeaway-callout">
-            <strong>Analysis</strong>
-            Action supervision is not neutral: the pre-training head directly shapes the backbone
-            representation. A transferable VLA backbone should preserve fine-grained action
-            information <em>while</em> supporting multiple downstream heads — which motivates
-            VLAct's multi-head continuous co-supervision.
-          </p>
-        </article>
-      </section>
-
-      <!-- =============================================================== METHOD -->
-      <section class="section blog-section" id="method" aria-labelledby="method-title">
-        <div class="section-heading">
-          <h2 id="method-title">VLAct: Representation-Centric VLA Pre-training</h2>
-        </div>
-        <article class="narrative-card">
-          <p>
-            VLAct pre-trains a reusable VLA backbone from a VLM initialization. During
-            pre-training, it preserves the VLM prior by freezing the vision encoder and shallow LLM
-            layers, while mixing robot trajectories with caption data. Robot samples supervise the
-            shared backbone through multiple continuous action heads — OFT, PI, and GR00T — under a
-            partially unified action layout with masked inactive dimensions and wrap-aware losses.
-            These components are used <em>only</em> to shape the backbone: during fine-tuning we
-            discard the pre-training heads and caption stream, attach a freshly initialized
-            task-specific action head, and train under the same downstream setting as each
-            baseline.
-          </p>
-
-          <figure class="story-figure paper-figure">
-            <img
-              class="paper-figure-media"
-              src="./static/figures/method_overview.png"
-              alt="Diagram of the VLAct pipeline. During pre-training the vision encoder and shallow LLM layers are frozen while deep LLM layers are trained; caption data is mixed with robot trajectories; three action heads (OFT, GR00T, PI) are co-supervised from the same backbone latent; a unified action space and a wrap-aware loss handle cross-embodiment alignment. During fine-tuning the full backbone is unfrozen and a single freshly initialized head is attached."
-              width="2400"
-              height="918"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>
-              <strong>Overview of VLAct.</strong> During pre-training, ① VLAct preserves the VLM
-              prior through shallow-layer protection and caption mixing, ② uses multi-head
-              continuous supervision to avoid head-specific representation collapse, and ③ aligns
-              cross-embodiment action semantics with a unified action layout and wrap-aware loss.
-              During fine-tuning, ④ we reuse the pretrained backbone and freshly initialize the
-              task-specific action head.
-            </figcaption>
-          </figure>
-
-          <div class="recipe-grid dense-grid" aria-label="VLAct recipe, part one">
-            <article>
-              <h3>① Preserve the VLM representation</h3>
-              <p>
-                We freeze the entire vision encoder and the lower half of the LLM layers during VLA
-                pre-training, while updating the upper LLM layers and the action heads. This
-                protects low-level visual processing and early vision-language alignment while
-                letting upper layers adapt to action-conditioned reasoning. Caption-mixed
-                pre-training additionally anchors the backbone with dense supervision over objects,
-                attributes, spatial relations, and scene context. Freezing alone is worth
-                <strong>+3.7%</strong> on LIBERO-Plus and <strong>+3.4%</strong> on AgileX.
-              </p>
-            </article>
-            <article>
-              <h3>② Make action features reusable</h3>
-              <p>
-                We attach three representative continuous heads — OFT, PI, and GR00T — to the
-                shared backbone. Given the same vision-language input, the backbone produces one
-                latent <em>z</em>; each head receives the same <em>z</em> and predicts the same
-                ground-truth action chunk <em>a</em>, so the objective is simply
-                <code>L_OFT + L_PI + L_GR00T</code>. Because all heads share one backbone forward
-                pass, this adds only lightweight head-specific computation.
-              </p>
-            </article>
-          </div>
-
-          <div class="recipe-grid dense-grid" aria-label="VLAct recipe, part two">
-            <article>
-              <h3>③ Align embodiments only where semantics match</h3>
-              <p>
-                Gripper dimensions are shared across embodiments because open/close commands have
-                comparable semantics, while arm dimensions remain embodiment-specific when the
-                robots differ in kinematics or degrees of freedom. Each sample contributes loss
-                only on the active dimensions for its embodiment; inactive dimensions are masked
-                out. No embodiment adapter, routing module, or embodiment-conditioned decoder is
-                introduced.
-              </p>
-            </article>
-            <article>
-              <h3>④ Transfer only the backbone</h3>
-              <p>
-                The pre-training heads and auxiliary losses act as scaffolding: they shape the
-                backbone representation but are not part of the downstream model. For each
-                downstream task the desired continuous action head is attached and initialized from
-                scratch, so improvements reflect the learned representation rather than a
-                pre-adapted head.
-              </p>
-            </article>
-          </div>
-
-          <article class="wide-result-card unified-action-card">
-            <figure class="paper-figure">
-              <img
-                class="paper-figure-media"
-                src="./static/figures/unified_action_space.png"
-                alt="Three action-space designs. (a) Separate heads: one head per embodiment. (b) Unified head: a shared head where the lower-dimensional Franka action is padded to the AgileX dimension. (c) Unified action representation: a shared head whose coordinates are assigned by embodiment role, so gripper dimensions align across robots and unused arm dimensions are padded and masked."
-                width="2200"
-                height="496"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-            <div class="wide-result-copy">
-              <h3>Partially unified cross-embodiment action space</h3>
-              <p>
-                Different embodiments have different action spaces, and the common solution — one
-                head or output projector per robot type — hides shared action structure inside
-                embodiment-specific heads. VLAct instead uses one shared head over a
-                <strong>20-dimensional</strong> layout assigned by embodiment role: dims 1–6 and
-                7–12 are the left and right 6-DoF arms of bimanual robots (absolute joint angles),
-                dims 13–18 the 6-DoF delta end-effector pose of single-arm robots, dim 19 the
-                shared gripper coordinate, and dim 20 the right gripper. Each corpus keeps its
-                native low-level action convention.
-              </p>
+            <div class="hero-media-grid" role="group" aria-label="VLAct real-robot demonstrations">
+              <figure class="hero-shot hero-shot-main">
+                <img src="assets/rollouts/table/5.jpg" alt="A Franka robot completing a long-horizon table-cleaning task" />
+                <figcaption><span>01</span> Long-horizon execution</figcaption>
+              </figure>
+              <figure class="hero-shot">
+                <img src="assets/rollouts/breakfast/4.jpg" alt="Two Franka arms coordinating during breakfast preparation" />
+                <figcaption><span>02</span> Dual-arm coordination</figcaption>
+              </figure>
+              <figure class="hero-shot">
+                <img src="assets/rollouts/pants/4.jpg" alt="Two Franka arms folding a pair of pants" />
+                <figcaption><span>03</span> Deformable objects</figcaption>
+              </figure>
             </div>
-          </article>
-
-          <p class="takeaway-callout">
-            <strong>Wrap-aware loss</strong>
-            Standard regression treats 179° and −179° as 358° apart, though they are physically
-            only 2° apart. VLAct wraps absolute joint angles into [−π, π] and measures the
-            <em>residual</em> modulo 2π before the L1 penalty. The correction applies only to
-            periodic joint dimensions — gripper commands and delta end-effector translations are
-            excluded.
-          </p>
-        </article>
-      </section>
-
-      <!-- ============================================================== RESULTS -->
-      <section class="section blog-section" id="results" aria-labelledby="results-title">
-        <div class="section-heading">
-          <h2 id="results-title">Experiments</h2>
-        </div>
-        <article class="narrative-card">
-          <p>
-            VLAct is pre-trained on fully open-source robot datasets — DROID, InternData-A1,
-            RoboCoin, and MolmoAct — together with captioning data for VLM representation
-            preservation. We build on the
-            <a href="https://github.com/starVLA/starVLA" target="_blank" rel="noopener"
-              ><strong>StarVLA</strong></a
-            >
-            training codebase and use <strong>Qwen3-VL-4B</strong> as the base vision-language
-            backbone. All experiments run on <strong>16 GPUs</strong>.
-          </p>
-          <p>
-            To isolate the effect of backbone representation quality, we keep the downstream action
-            head, data budget, and fine-tuning recipe fixed, and replace only the pretrained
-            backbone. Under this controlled protocol, VLAct consistently improves over generic VLM
-            backbones and naive VLA-pretrained baselines.
-          </p>
-        </article>
-
-        <div class="metric-hero-grid">
-          <article class="metric-hero-card">
-            <span>LIBERO-Plus</span>
-            <strong>82.6%</strong>
-            <p>
-              Best overall score, improving over our strongest in-house baseline Qwen3VL-OFT by
-              <strong>7.6%</strong> (82.6 vs. 75.0). VLAct also surpasses ABot-M0, a large-scale
-              Alibaba VLA system, by <strong>2.1%</strong>.
-            </p>
-          </article>
-          <article class="metric-hero-card">
-            <span>VLA-Arena</span>
-            <strong>53.4%</strong>
-            <p>
-              Best score on every axis. VLAct improves over Qwen3-VL-OFT by <strong>20.0</strong>
-              points and over the strongest public baseline π<sub>0.5</sub> by
-              <strong>9.1</strong> points.
-            </p>
-          </article>
-          <article class="metric-hero-card">
-            <span>RoboTwin 2.0</span>
-            <strong>92.5%</strong>
-            <p>
-              State of the art in both the Base and Data Scaling settings. In Data Scaling,
-              VLAct-OFT reaches <strong>92.5</strong> Clean and <strong>90.8</strong> Random.
-            </p>
-          </article>
-          <article class="metric-hero-card">
-            <span>DOMINO</span>
-            <strong>18.50 <small>SR</small></strong>
-            <p>
-              Best on both dynamic-manipulation metrics, at <strong>18.50</strong> SR and
-              <strong>34.20</strong> MS — <strong>+7.64</strong> SR over Qwen3VL-OFT.
-            </p>
-          </article>
-          <article class="metric-hero-card">
-            <span>RoboCasa-GR1</span>
-            <strong>54.0%</strong>
-            <p>
-              On a humanoid embodiment held out of pre-training, VLAct beats Qwen3VL-OFT (48.8),
-              GR00T-N1.6 (47.6), and π<sub>0.5</sub> (37.0) — with just
-              <strong>20%</strong> of the data already at 49.5.
-            </p>
-          </article>
-          <article class="metric-hero-card">
-            <span>RoboDojo</span>
-            <strong>10.66 <small>score</small></strong>
-            <p>
-              Eighth by score and <strong>sixth by success rate</strong> (7.60%) among 35 policies,
-              ahead of every explicitly designated world-action model.
-            </p>
-          </article>
-        </div>
-
-        <!-- LIBERO-Plus -->
-        <article class="table-card">
-          <h3>LIBERO-Plus — single-arm Franka robustness</h3>
-          <p class="table-intro">
-            Per-dimension success rate (%) on the LIBERO-Plus robustness benchmark. All models are
-            trained on standard LIBERO and evaluated on the perturbed test set. The largest gains
-            over Qwen3VL-OFT appear on <em>Camera</em>, <em>Robot</em>, <em>Noise</em>, and
-            <em>Layout</em>, suggesting that representation-centric pre-training yields more robust
-            visual-spatial representations.
-          </p>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th scope="col">Method</th>
-                  <th scope="col">Camera</th>
-                  <th scope="col">Robot</th>
-                  <th scope="col">Lang.</th>
-                  <th scope="col">Light</th>
-                  <th scope="col">Bg.</th>
-                  <th scope="col">Noise</th>
-                  <th scope="col">Layout</th>
-                  <th scope="col">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">OpenVLA</th><td>0.8</td><td>3.5</td><td>23.0</td><td>8.1</td><td>34.8</td><td>15.2</td><td>28.5</td><td>15.6</td></tr>
-                <tr><th scope="row">OpenVLA-OFT</th><td>56.4</td><td>31.9</td><td>79.5</td><td>88.7</td><td>93.3</td><td>75.8</td><td>74.2</td><td>69.6</td></tr>
-                <tr><th scope="row">NORA</th><td>2.2</td><td>37.0</td><td>65.1</td><td>45.7</td><td>58.6</td><td>12.8</td><td>62.1</td><td>39.0</td></tr>
-                <tr><th scope="row">WorldVLA</th><td>0.1</td><td>27.9</td><td>41.6</td><td>43.7</td><td>17.1</td><td>10.9</td><td>38.0</td><td>25.0</td></tr>
-                <tr><th scope="row">UniVLA</th><td>1.8</td><td>46.2</td><td>69.6</td><td>69.0</td><td>81.0</td><td>21.2</td><td>31.9</td><td>42.9</td></tr>
-                <tr><th scope="row">π<sub>0</sub></th><td>13.8</td><td>6.0</td><td>58.8</td><td>85.0</td><td>81.4</td><td>79.0</td><td>68.8</td><td>53.6</td></tr>
-                <tr><th scope="row">π<sub>0</sub>-FAST</th><td class="second">65.1</td><td>21.6</td><td>61.0</td><td>73.2</td><td>73.2</td><td>74.4</td><td>68.8</td><td>61.6</td></tr>
-                <tr><th scope="row">RIPT-VLA</th><td>55.2</td><td>31.2</td><td>77.5</td><td>88.3</td><td>91.6</td><td>73.5</td><td>74.2</td><td>68.4</td></tr>
-                <tr class="row-alt"><th scope="row">ABot-M0</th><td>60.4</td><td class="second">67.9</td><td class="second">86.4</td><td>96.2</td><td>91.6</td><td class="best">86.4</td><td class="second">82.6</td><td class="second">80.5</td></tr>
-                <tr><th scope="row">Qwen3VL-OFT</th><td>47.0</td><td>60.1</td><td class="best">87.0</td><td class="second">96.3</td><td class="second">95.3</td><td>73.1</td><td>79.2</td><td>75.0</td></tr>
-                <tr class="row-ours divider-above"><th scope="row">VLAct (ours)</th><td class="best">73.9</td><td class="best">68.4</td><td>81.5</td><td class="best">96.7</td><td class="best">96.7</td><td class="second">86.0</td><td class="best">83.3</td><td class="best">82.6</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-          <p class="table-legend">
-            <span><span class="swatch best" aria-hidden="true"></span> VLAct / best per column</span>
-            <span><span class="swatch second" aria-hidden="true"></span> strongest prior method</span>
-            <span><strong>Bold</strong> = best &nbsp; <u>underline</u> = second best</span>
-          </p>
-        </article>
-
-        <!-- VLA-Arena -->
-        <article class="table-card">
-          <h3>VLA-Arena — behavioral generalization</h3>
-          <p class="table-intro">
-            Success rate (%) averaged over difficulty levels L0/L1/L2 within each task category;
-            the final average follows the official suite weighting over 11 task suites. VLAct wins
-            every axis, with especially large gains on <em>Safety</em> (+9.4) and
-            <em>Distractor</em> (+12.0) over π<sub>0.5</sub>.
-          </p>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th scope="col">Method</th>
-                  <th scope="col">Safety</th>
-                  <th scope="col">Distractor</th>
-                  <th scope="col">Extrap.</th>
-                  <th scope="col">Long-H.</th>
-                  <th scope="col">Avg.</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">SmolVLA</th><td>16.5</td><td>21.0</td><td>10.0</td><td>24.7</td><td>16.3</td></tr>
-                <tr><th scope="row">π<sub>0</sub>-FAST</th><td>34.1</td><td>39.0</td><td>4.2</td><td>20.7</td><td>25.6</td></tr>
-                <tr><th scope="row">GR00T-N1.6</th><td>32.8</td><td>40.7</td><td>16.7</td><td>10.3</td><td>27.8</td></tr>
-                <tr><th scope="row">Qwen3-VL-π</th><td>38.3</td><td>45.3</td><td>22.4</td><td>25.3</td><td>34.1</td></tr>
-                <tr><th scope="row">UniVLA</th><td>45.5</td><td>41.3</td><td>31.1</td><td>22.0</td><td>38.7</td></tr>
-                <tr><th scope="row">OpenVLA</th><td>41.9</td><td>43.0</td><td class="second">36.7</td><td>26.7</td><td>39.3</td></tr>
-                <tr><th scope="row">OpenVLA-OFT</th><td>43.2</td><td>52.3</td><td>30.4</td><td>26.7</td><td>39.9</td></tr>
-                <tr><th scope="row">π<sub>0</sub></th><td>49.7</td><td>43.7</td><td>32.7</td><td>31.3</td><td>42.3</td></tr>
-                <tr class="row-alt"><th scope="row">π<sub>0.5</sub></th><td class="second">51.5</td><td class="second">54.0</td><td>31.1</td><td>29.0</td><td class="second">44.3</td></tr>
-                <tr><th scope="row">Qwen3-VL-OFT</th><td>36.1</td><td>40.0</td><td>24.7</td><td class="second">32.7</td><td>33.4</td></tr>
-                <tr class="row-ours divider-above"><th scope="row">VLAct (ours)</th><td class="best">60.9</td><td class="best">66.0</td><td class="best">39.3</td><td class="best">33.0</td><td class="best">53.4</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-        </article>
-
-        <!-- RoboTwin -->
-        <article class="table-card">
-          <h3>RoboTwin 2.0 — bimanual AgileX manipulation</h3>
-          <p class="table-intro">
-            Task success rate (%) under the Clean and Random regimes, where Random introduces
-            variations in object identity, pose, lighting, and texture. <em>Base</em> uses 50 clean
-            trajectories per task; <em>Data Scaling</em> adds 500 randomized trajectories per task.
-            Each regime contains 50 tasks with 100 episodes per task. Performance stays stable
-            across downstream head choices, supporting the head-transfer claim: the transferred
-            object is the backbone representation, not a particular action head.
-          </p>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th scope="col" rowspan="2">Method</th>
-                  <th scope="col" rowspan="2">Action Head</th>
-                  <th scope="col" colspan="2">Base Setting</th>
-                  <th scope="col" colspan="2">Data Scaling Setting</th>
-                </tr>
-                <tr>
-                  <th scope="col">Clean</th>
-                  <th scope="col">Random</th>
-                  <th scope="col">Clean</th>
-                  <th scope="col">Random</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="group-row"><td colspan="6">Continuous heads</td></tr>
-                <tr><th scope="row">π<sub>0</sub></th><td>PI</td><td>46.4</td><td>16.4</td><td>65.9</td><td>58.4</td></tr>
-                <tr><th scope="row">π<sub>0.5</sub></th><td>PI</td><td>60.2</td><td>–</td><td>82.7</td><td>76.8</td></tr>
-                <tr><th scope="row">X-VLA</th><td>PI</td><td>–</td><td>–</td><td>72.9</td><td>72.8</td></tr>
-                <tr><th scope="row">LingBot-VLA</th><td>PI</td><td>–</td><td>–</td><td>88.6</td><td>86.7</td></tr>
-                <tr><th scope="row">ABot-M0</th><td>PI</td><td>–</td><td>–</td><td>86.1</td><td>85.1</td></tr>
-                <tr><th scope="row">Qwen3VL-OFT</th><td>OFT</td><td>61.7</td><td>10.5</td><td>88.2</td><td>88.3</td></tr>
-                <tr class="group-row divider-above"><td colspan="6">VLAct (same backbone, varying continuous head)</td></tr>
-                <tr class="row-ours"><th scope="row">VLAct (ours)</th><td>OFT</td><td class="best">80.5</td><td class="best">41.5</td><td class="best">92.5</td><td class="best">90.8</td></tr>
-                <tr class="row-alt"><th scope="row">VLAct (ours)</th><td>GR00T</td><td>74.2</td><td>22.9</td><td class="second">89.6</td><td>87.4</td></tr>
-                <tr class="row-alt"><th scope="row">VLAct (ours)</th><td>PI</td><td class="second">78.4</td><td class="second">24.1</td><td>89.4</td><td class="second">88.8</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-        </article>
-
-        <!-- DOMINO -->
-        <article class="table-card">
-          <h3>DOMINO — dynamic bimanual manipulation</h3>
-          <p class="table-intro">
-            One policy evaluated on all 35 DOMINO dynamic manipulation tasks under the clean
-            dynamic setting, with moving objects and changing scene states. DOMINO reports Success
-            Rate (SR) and Manipulation Score (MS).
-          </p>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th scope="col">Model</th>
-                  <th scope="col">Backbone</th>
-                  <th scope="col">SR ↑</th>
-                  <th scope="col">MS ↑</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">OpenVLA</th><td>Llama-2</td><td>1.54</td><td>6.10</td></tr>
-                <tr><th scope="row">RDT-1B</th><td>DiT-1B</td><td>5.34</td><td>17.71</td></tr>
-                <tr><th scope="row">π<sub>0</sub></th><td>PaliGemma</td><td>8.17</td><td>23.96</td></tr>
-                <tr><th scope="row">π<sub>0</sub>-FAST</th><td>PaliGemma</td><td>3.54</td><td>20.87</td></tr>
-                <tr><th scope="row">π<sub>0.5</sub></th><td>PaliGemma</td><td>9.63</td><td>26.17</td></tr>
-                <tr><th scope="row">InternVLA-M1</th><td>InternVL</td><td>5.40</td><td>27.57</td></tr>
-                <tr><th scope="row">OpenVLA-OFT</th><td>Llama-2</td><td>9.06</td><td>24.06</td></tr>
-                <tr class="row-alt"><th scope="row">Qwen3VL-OFT</th><td>Qwen3-VL</td><td class="second">10.86</td><td class="second">30.49</td></tr>
-                <tr class="row-ours divider-above"><th scope="row">VLAct-OFT (ours)</th><td>Qwen3-VL</td><td class="best">18.50</td><td class="best">34.20</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-        </article>
-      </section>
-
-      <!-- ============================================================= TRANSFER -->
-      <section class="section blog-section" id="transfer" aria-labelledby="transfer-title">
-        <div class="section-heading">
-          <h2 id="transfer-title">Does VLAct transfer to unseen embodiments?</h2>
-        </div>
-        <article class="narrative-card">
-          <p>
-            VLAct is pre-trained only on Franka single-arm and AgileX bimanual data. Both the
-            <strong>GR-1 humanoid</strong> and the <strong>ARX X5</strong> bimanual platform are
-            held out during pre-training, so these settings directly probe cross-embodiment
-            transfer: the target robots differ in morphology, action space, and manipulation
-            dynamics.
-          </p>
-
-          <div class="recipe-grid dense-grid" aria-label="Cross-embodiment transfer results">
-            <article>
-              <h3>RoboCasa-GR1: 20% of the data beats full-data baselines</h3>
-              <p>
-                With full fine-tuning data VLAct reaches <strong>54.0%</strong>, above Qwen3VL-OFT
-                (48.8%), GR00T-N1.6 (47.6%), and π<sub>0.5</sub> (37.0%). The data-efficiency curve
-                is the stronger result: with only <strong>20%</strong> of RoboCasa-GR1 trajectories
-                VLAct already reaches <strong>49.5%</strong>, matching or exceeding the full-data
-                Qwen3VL-OFT baseline; 50% of the data gives 51.0%, and full data 54.0%. VLAct is
-                therefore not merely benefiting from downstream data scale — the pretrained
-                backbone transfers useful action structure to the unseen embodiment before full
-                task-specific adaptation.
-              </p>
-            </article>
-            <article>
-              <h3>RoboDojo: top quartile on an external leaderboard</h3>
-              <p>
-                RoboDojo evaluates policies on 42 ARX X5 simulation tasks spanning Generalization,
-                Precision, Long-Horizon, Memory, and Open capabilities, 50 episodes each. Among 35
-                policies on the
-                <a href="https://robodojo-benchmark.com/leaderboard" target="_blank" rel="noopener"
-                  >official leaderboard</a
-                >
-                (August&nbsp;24, 2026 snapshot), VLAct ranks <strong>eighth by average score</strong>
-                and <strong>sixth by average success rate</strong>. It exceeds the strongest
-                designated world-action model, X-WAM, by <strong>2.97 score points</strong> and
-                <strong>3.77 percentage points</strong> of success, and outperforms
-                Xiaomi-Robotics-0, GalaxeaVLA (G0), LingBot-VLA, and ABot-M0. Six of the seven
-                higher-scoring entries come from industry teams. Against the Qwen3-VL-based
-                StarVLA-α entry, VLAct gains 4.26 score points and 4.36 points of success, mostly
-                on Precision and Long-Horizon; <em>Memory remains a clear limitation.</em>
-              </p>
-            </article>
-          </div>
-        </article>
-
-        <article class="table-card">
-          <h3>RoboDojo leaderboard — top 20 of 35 policies</h3>
-          <p class="table-intro">
-            Official August&nbsp;24, 2026 snapshot, ordered by average score. Each cell reports
-            partial-progress score / success rate (%). Gen.-Std. and Gen.-Rand. denote the standard
-            and randomized Generalization settings. Rows marked <sup>†</sup> are explicitly
-            designated world-action-model (WAM) entries. The leaderboard does not normalize for
-            training compute.
-          </p>
-          <div class="table-wrap">
-            <table class="result-table">
-              <thead>
-                <tr>
-                  <th scope="col">Method</th>
-                  <th scope="col">Gen.-Std.</th>
-                  <th scope="col">Gen.-Rand.</th>
-                  <th scope="col">Precision</th>
-                  <th scope="col">Long-Horizon</th>
-                  <th scope="col">Memory</th>
-                  <th scope="col">Open</th>
-                  <th scope="col">Average</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row">DM0.5</th><td>23.49 / 18.00</td><td>8.06 / 4.00</td><td>24.82 / 16.75</td><td>33.70 / 19.50</td><td>47.74 / 47.44</td><td>2.43 / 2.08</td><td>24.90 / 19.34</td></tr>
-                <tr><th scope="row">GalaxeaVLA (G0.5)</th><td>26.74 / 20.00</td><td>11.16 / 6.00</td><td>28.25 / 20.42</td><td>44.12 / 32.25</td><td>8.61 / 7.33</td><td>1.73 / 1.58</td><td>20.23 / 14.88</td></tr>
-                <tr><th scope="row">Xiaomi-Robotics-1</th><td>35.65 / 28.00</td><td>11.44 / 6.00</td><td>26.69 / 18.83</td><td>38.39 / 23.67</td><td>7.81 / 6.56</td><td>3.94 / 3.58</td><td>20.07 / 13.93</td></tr>
-                <tr><th scope="row">Hy-Embodied-0.5-VLA</th><td>21.98 / 17.00</td><td>1.57 / 0.00</td><td>13.81 / 8.00</td><td>25.74 / 14.92</td><td>13.37 / 12.11</td><td>0.65 / 0.58</td><td>13.07 / 8.80</td></tr>
-                <tr><th scope="row">Spatial Forcing</th><td>21.25 / 15.00</td><td>6.98 / 4.00</td><td>17.33 / 10.58</td><td>23.26 / 14.58</td><td>5.43 / 4.11</td><td>1.78 / 1.58</td><td>12.38 / 8.04</td></tr>
-                <tr><th scope="row">π<sub>0.5</sub></th><td>20.93 / 15.00</td><td>5.82 / 1.00</td><td>12.40 / 5.50</td><td>23.54 / 14.67</td><td>5.78 / 4.56</td><td>1.98 / 1.67</td><td>11.41 / 6.91</td></tr>
-                <tr><th scope="row">InternVLA-A1.5</th><td>16.81 / 12.00</td><td>3.90 / 2.00</td><td>15.23 / 10.17</td><td>23.80 / 13.75</td><td>4.93 / 3.56</td><td>1.43 / 1.42</td><td>11.15 / 7.14</td></tr>
-                <tr class="row-ours"><th scope="row">VLAct (ours)</th><td>16.33 / 12.00</td><td>2.74 / 1.00</td><td>20.62 / 15.25</td><td>20.12 / 13.67</td><td>0.66 / 0.56</td><td>2.37 / 2.25</td><td>10.66 / 7.60</td></tr>
-                <tr><th scope="row">X-VLA</th><td>17.90 / 12.00</td><td>3.04 / 1.00</td><td>18.32 / 12.00</td><td>16.53 / 9.75</td><td>4.76 / 3.56</td><td>0.55 / 0.50</td><td>10.13 / 6.52</td></tr>
-                <tr class="row-alt"><th scope="row">X-WAM<sup>†</sup></th><td>11.24 / 5.00</td><td>3.54 / 1.00</td><td>6.72 / 1.83</td><td>17.47 / 9.08</td><td>6.32 / 4.67</td><td>0.57 / 0.25</td><td>7.69 / 3.83</td></tr>
-                <tr><th scope="row">Xiaomi-Robotics-0</th><td>13.81 / 11.00</td><td>1.05 / 0.00</td><td>8.42 / 4.58</td><td>13.51 / 6.92</td><td>5.07 / 3.67</td><td>0.22 / 0.17</td><td>6.93 / 4.18</td></tr>
-                <tr><th scope="row">StarVLA-α</th><td>7.54 / 5.00</td><td>0.33 / 0.00</td><td>9.90 / 4.33</td><td>14.15 / 6.50</td><td>3.34 / 2.44</td><td>0.68 / 0.58</td><td>6.40 / 3.24</td></tr>
-                <tr class="row-alt"><th scope="row">GigaWorld-Policy-0<sup>†</sup></th><td>10.28 / 6.00</td><td>0.41 / 0.00</td><td>6.15 / 1.83</td><td>15.51 / 8.92</td><td>3.46 / 2.22</td><td>0.54 / 0.50</td><td>6.20 / 3.27</td></tr>
-                <tr><th scope="row">GalaxeaVLA (G0)</th><td>8.71 / 6.00</td><td>0.36 / 0.00</td><td>8.10 / 3.83</td><td>12.60 / 5.58</td><td>3.17 / 1.89</td><td>0.70 / 0.67</td><td>5.82 / 2.96</td></tr>
-                <tr><th scope="row">LingBot-VLA</th><td>10.88 / 8.00</td><td>2.55 / 1.00</td><td>5.33 / 1.83</td><td>10.89 / 5.25</td><td>3.82 / 2.78</td><td>0.72 / 0.67</td><td>5.50 / 2.96</td></tr>
-                <tr><th scope="row">EventVLA</th><td>6.68 / 3.00</td><td>1.22 / 0.00</td><td>10.13 / 5.75</td><td>5.05 / 0.83</td><td>4.92 / 4.78</td><td>0.80 / 0.75</td><td>4.97 / 2.81</td></tr>
-                <tr class="row-alt"><th scope="row">AHA-WAM<sup>†</sup></th><td>10.32 / 6.00</td><td>1.26 / 0.00</td><td>5.86 / 2.42</td><td>8.61 / 2.67</td><td>2.97 / 2.78</td><td>0.88 / 0.83</td><td>4.82 / 2.39</td></tr>
-                <tr><th scope="row">ABot-M0</th><td>9.20 / 5.00</td><td>2.26 / 2.00</td><td>5.50 / 1.75</td><td>3.96 / 0.50</td><td>2.44 / 2.22</td><td>0.72 / 0.67</td><td>3.67 / 1.73</td></tr>
-                <tr class="row-alt"><th scope="row">Fast-WAM<sup>†</sup></th><td>4.33 / 2.00</td><td>0.34 / 0.00</td><td>1.96 / 0.00</td><td>9.14 / 5.17</td><td>3.55 / 3.44</td><td>0.42 / 0.42</td><td>3.48 / 2.03</td></tr>
-                <tr><th scope="row">π<sub>0</sub></th><td>7.18 / 5.00</td><td>0.71 / 0.00</td><td>3.56 / 0.75</td><td>6.19 / 2.00</td><td>3.47 / 2.11</td><td>0.25 / 0.25</td><td>3.48 / 1.53</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-        </article>
-      </section>
-
-      <!-- =========================================================== REAL WORLD -->
-      <section class="section blog-section" id="real-world" aria-labelledby="real-world-title">
-        <div class="section-heading">
-          <h2 id="real-world-title">What happens on real robots?</h2>
-        </div>
-
-        <article class="narrative-card">
-          <p>
-            The physical evaluation platform uses stationary, table-mounted
-            <strong>Franka Research 3</strong> 7-DoF arms — one for single-arm setups, two for
-            dual-arm tasks. A fixed Intel RealSense D435 provides the third-person view and each arm
-            carries a wrist-mounted RealSense D405; all images are resized to 224×224. We train two
-            models, one for all single-arm tasks and one for all dual-arm tasks, each for 50k steps
-            on 8 H800 GPUs, and roll out 10 trials per task. The baseline is
-            <strong>Qwen3VL-4B-OFT without pre-training</strong>.
-          </p>
-        </article>
-
-        <figure class="story-figure paper-figure">
-          <img
-            class="paper-figure-media"
-            src="./static/figures/real_world_and_robocasa.png"
-            alt="Four panels. (a) Single-arm short-range per-task scores where VLAct matches or beats the baseline on all six tasks. (b) Single-arm long-horizon weighted scores where VLAct scores 8.66, 8.00, 8.25, and 8.33 against 7.33, 3.33, 4.75, and 4.66. (c) Dual-arm coordination per-task scores where VLAct leads on all five tasks. (d) RoboCasa-GR1 data-efficiency curve rising from 41.42 at 10% of the downstream data to 49.5 at 20%, 51.0 at 50%, and 54.0 at 100%, crossing the full-data reference lines for pi-0.5, GR00T-N1.6, and Qwen3-VL-OFT between the 10% and 20% points."
-            width="2400"
-            height="1433"
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption>
-            <strong>Real-machine evaluation and cross-embodiment transfer.</strong> (a)–(c)
-            Real-machine results on single-arm short-range, single-arm long-horizon, and dual-arm
-            coordination tasks, where VLAct consistently improves over the baseline. (d)
-            Cross-embodiment transfer on RoboCasa-GR1, where VLAct transfers to the held-out GR-1
-            embodiment and surpasses reported full-data baselines with only 20% downstream data.
-          </figcaption>
-        </figure>
-
-        <div class="recipe-grid dense-grid" aria-label="Real-world result breakdown">
-          <article>
-            <h3>In-domain and novel-object short-horizon</h3>
-            <p>
-              On in-domain single-arm short-horizon tasks VLAct averages <strong>92.5%</strong>
-              success versus <strong>77.5%</strong> for the baseline, with the clearest gains on
-              spatially sensitive tasks — cube stacking (90% vs. 60%) and pen-in-cup (80% vs. 60%).
-              Under object-level distribution shift it reaches <strong>90.0%</strong> on both
-              "novel object from pot" and "novel object in cup", against 73.3% and 65.0%.
-            </p>
-          </article>
-          <article>
-            <h3>Long-horizon execution</h3>
-            <p>
-              VLAct obtains weighted success rates of <strong>86.6%</strong> on table cleaning and
-              <strong>80.0%</strong> on scooping beans, versus 73.3% and 33.3% for the baseline —
-              which frequently skips the scooping phase and pours with an empty spoon. Under harder
-              OOD settings VLAct keeps <strong>82.5%</strong> on extended-sequence table cleaning
-              and <strong>83.3%</strong> under full object substitution, while the baseline drops
-              to 47.5% and 46.6%.
-            </p>
-          </article>
-          <article>
-            <h3>Dual-arm coordination from single-arm pre-training</h3>
-            <p>
-              Despite being pre-trained only on single-arm data, VLAct reaches
-              <strong>72.0%</strong> average success across dual-arm tasks versus
-              <strong>44.0%</strong> for the baseline. The largest gaps appear on deformable-object
-              and synchronization-heavy tasks: fold pants 70% vs. 40%, fold towel 50% vs. 20%,
-              where the baseline suffers velocity mismatch between the two arms.
-            </p>
-          </article>
-          <article>
-            <h3>What this suggests</h3>
-            <p>
-              Representation-centric pre-training improves not only in-domain manipulation
-              accuracy, but also novel-object generalization, long-horizon execution, and dual-arm
-              coordination — the three regimes where the non-pre-trained backbone degrades most.
-            </p>
-          </article>
-        </div>
-
-        <article class="wide-result-card detail-wide-card">
-          <figure class="paper-figure">
-            <img
-              class="paper-figure-media"
-              src="./static/figures/real_robot_tasks.jpg"
-              alt="Photographic grid of the real-robot evaluation tasks, covering in-domain single-arm short-horizon and long-horizon tasks, dual-arm coordination tasks, and out-of-domain variants with novel objects and extended object sequences."
-              width="2200"
-              height="1090"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-          <div class="figure-result-copy">
-            <span class="eyebrow">Physical Evaluation</span>
-            <h3>In-domain, long-horizon, dual-arm, and OOD tasks</h3>
-            <p>
-              Schematic illustrations of the real-robot in-domain and out-of-domain evaluation
-              tasks. Single-arm short-horizon covers carrot-from-pot, button pressing, cube
-              stacking, and pen-in-cup; long-horizon covers table cleaning and scooping beans;
-              dual-arm covers unplugging, breakfast preparation, banana handover-place, fold pants,
-              and fold towel; OOD swaps in novel objects or extends the object sequence.
-            </p>
-            <div class="metric-list" aria-label="Headline real-world results">
-              <span><strong>92.5%</strong> ID single-arm short-horizon</span>
-              <span><strong>72.0%</strong> ID dual-arm coordination</span>
-              <span><strong>90.0%</strong> novel-object short-horizon</span>
-              <span><strong>83.3%</strong> OOD full object substitution</span>
+            <div class="hero-trajectory" aria-hidden="true">
+              <span>Vision + language</span><i></i><span>Shared representation</span><i></i><span>Fine-tuned on held-out embodiment</span>
             </div>
           </div>
-        </article>
 
-        <figure class="story-figure paper-figure">
-          <img
-            class="paper-figure-media"
-            src="./static/figures/real_robot_setup.jpg"
-            alt="Photographs of the robot setup: table-mounted Franka Research 3 arms with a fixed external RealSense D435 camera and wrist-mounted D405 cameras, alongside sample frames from the eleven real-world training task suites."
-            width="2200"
-            height="655"
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption>
-            <strong>Robot setting and real-world training data.</strong> (a) Hardware setup for the
-            experiments. (b) Real-world robot trajectories collected for eleven task suites.
-          </figcaption>
-        </figure>
+          <div class="floating-note floating-note-top" aria-hidden="true">
+            <span class="floating-note-value">20%</span>
+            <span>RoboCasa-GR1 data beats<br />reported full-data GR00T-N1.6</span>
+          </div>
+          <div class="floating-note floating-note-bottom" aria-hidden="true">
+            <span class="pulse-dot"></span>
+            <span>One backbone.<br />Many ways to act.</span>
+          </div>
+        </div>
+
+        <a class="scroll-cue" href="#story">
+          <span>Scroll to explore</span>
+          <span aria-hidden="true">↓</span>
+        </a>
       </section>
 
-      <!-- ================================================================ DEMOS -->
-      <section class="section" id="demos" aria-labelledby="demo-title">
-        <div class="section-heading">
-          <h2 id="demo-title">Demos</h2>
+      <div class="topic-marquee" role="region" aria-label="Research scope">
+        <div class="marquee-track">
+          <span>Franka manipulation</span><i></i>
+          <span>AgileX bimanual control</span><i></i>
+          <span>GR-1 fine-tuned transfer</span><i></i>
+          <span>ARX X5 generalization</span><i></i>
+          <span>Multiple action heads</span><i></i>
+          <span>Open-data pre-training</span><i></i>
+          <span aria-hidden="true">Franka manipulation</span><i aria-hidden="true"></i>
+          <span aria-hidden="true">AgileX bimanual control</span><i aria-hidden="true"></i>
+          <span aria-hidden="true">GR-1 fine-tuned transfer</span><i aria-hidden="true"></i>
+          <span aria-hidden="true">ARX X5 generalization</span><i aria-hidden="true"></i>
+          <span aria-hidden="true">Multiple action heads</span><i aria-hidden="true"></i>
+          <span aria-hidden="true">Open-data pre-training</span><i aria-hidden="true"></i>
         </div>
-        <p class="section-lede">
-          All clips are autonomous rollouts at 1× speed, played muted. Click a video or its
-          <em>Play</em> button to start.
-        </p>
+      </div>
 
-        <div class="demo-columns">
-          <section
-            class="demo-carousel"
-            data-platform="Single Arm"
-            tabindex="0"
-            aria-label="Single Arm inference demo carousel"
-          >
-            <div class="carousel-heading">
-              <h3>Single Arm</h3>
-            </div>
-            <div class="demo-track" id="single-arm-demo-track"></div>
-            <div class="carousel-controls" aria-label="Single Arm demo carousel controls">
-              <button class="carousel-button" type="button" data-carousel-prev="Single Arm" aria-label="Previous Single Arm demo">‹</button>
-              <button class="carousel-button" type="button" data-carousel-next="Single Arm" aria-label="Next Single Arm demo">›</button>
-            </div>
-          </section>
+      <section class="section story-section" id="story" data-section>
+        <div class="section-heading reveal">
+          <p class="section-index">01 · The premise</p>
+          <h2>Robot data is scarce.<br /><em>Representation</em> is leverage.</h2>
+        </div>
 
-          <section
-            class="demo-carousel"
-            data-platform="Dual Arm"
-            tabindex="0"
-            aria-label="Dual Arm inference demo carousel"
-          >
-            <div class="carousel-heading">
-              <h3>Dual Arm</h3>
-            </div>
-            <div class="demo-track" id="dual-arm-demo-track"></div>
-            <div class="carousel-controls" aria-label="Dual Arm demo carousel controls">
-              <button class="carousel-button" type="button" data-carousel-prev="Dual Arm" aria-label="Previous Dual Arm demo">‹</button>
-              <button class="carousel-button" type="button" data-carousel-next="Dual Arm" aria-label="Next Dual Arm demo">›</button>
-            </div>
-          </section>
+        <div class="story-grid">
+          <blockquote class="pull-quote reveal">
+            “Progress depends not only on how many trajectories we collect, but on how effectively
+            each one shapes a reusable backbone.”
+          </blockquote>
+          <div class="story-copy reveal">
+            <p>
+              Large-scale robot trajectories cannot simply be scraped from the web. They are costly
+              to collect, tied to particular bodies, and sparse relative to the physical world's diversity.
+            </p>
+            <p>
+              VLAct treats pre-training as representation learning—not simply action fitting—and is
+              designed to preserve the broad VLM prior while acquiring transferable action semantics.
+            </p>
+          </div>
+        </div>
 
-          <section class="comparison-showcase" aria-labelledby="comparison-title">
-            <div class="carousel-heading">
-              <h3 id="comparison-title">Policy Comparison</h3>
-            </div>
-            <div class="comparison-grid">
-              <article class="comparison-pair">
-                <h4>Clean Table &mdash; long-horizon</h4>
-                <div class="comparison-videos">
-                  <figure class="comparison-video-card is-landscape">
-                    <video muted playsinline loop preload="metadata" aria-label="VLAct clean table comparison demo">
-                      <source src="./static/videos/clean-table.mp4" type="video/mp4" />
-                    </video>
-                    <span class="comparison-method-badge">VLAct</span>
-                    <span class="comparison-run-badge">autonomous, 1x speed</span>
-                  </figure>
-                  <figure class="comparison-video-card">
-                    <video muted playsinline loop preload="metadata" aria-label="Qwen3VL-OFT clean table comparison demo">
-                      <source src="./static/videos/clean-table-compare.mp4" type="video/mp4" />
-                    </video>
-                    <span class="comparison-method-badge baseline">Qwen3VL-OFT</span>
-                    <span class="comparison-run-badge">autonomous, 1x speed</span>
-                  </figure>
-                </div>
-              </article>
-
-              <article class="comparison-pair">
-                <h4>Scoop Beans &mdash; long-horizon</h4>
-                <div class="comparison-videos">
-                  <figure class="comparison-video-card is-landscape">
-                    <video muted playsinline loop preload="metadata" aria-label="VLAct scoop beans comparison demo">
-                      <source src="./static/videos/scoop-beans.mp4" type="video/mp4" />
-                    </video>
-                    <span class="comparison-method-badge">VLAct</span>
-                    <span class="comparison-run-badge">autonomous, 1x speed</span>
-                  </figure>
-                  <figure class="comparison-video-card">
-                    <video muted playsinline loop preload="metadata" aria-label="Qwen3VL-OFT scoop beans comparison demo">
-                      <source src="./static/videos/scoop-beans-compare.mp4" type="video/mp4" />
-                    </video>
-                    <span class="comparison-method-badge baseline">Qwen3VL-OFT</span>
-                    <span class="comparison-run-badge">autonomous, 1x speed</span>
-                  </figure>
-                </div>
-              </article>
-            </div>
-          </section>
+        <div class="metric-grid" role="group" aria-label="Headline results">
+          <article class="metric-card reveal">
+            <p class="metric-value"><span data-count="82.6" data-decimals="1">82.6</span><small>%</small></p>
+            <h3>LIBERO-Plus</h3>
+            <p>Official Total success rate, 7.6 percentage points above the matched Qwen3VL-OFT baseline.</p>
+          </article>
+          <article class="metric-card reveal">
+            <p class="metric-value"><span data-count="92.5" data-decimals="1">92.5</span><small>%</small></p>
+            <h3>RoboTwin 2.0</h3>
+            <p>Clean success in the Data Scaling setting, with 90.8% under randomization.</p>
+          </article>
+          <article class="metric-card metric-card-accent reveal">
+            <p class="metric-value"><span data-count="20" data-decimals="0">20</span><small>%</small></p>
+            <h3>RoboCasa-GR1 data</h3>
+            <p>Of RoboCasa-GR1 fine-tuning trajectories—enough to exceed the reported 100%-data baselines shown below.</p>
+          </article>
+          <article class="metric-card reveal">
+            <p class="metric-value"><span data-count="16" data-decimals="0">16</span><small> GPUs</small></p>
+            <h3>Pre-training scale</h3>
+            <p>VLAct pre-training uses open datasets in a 16-GPU setup.</p>
+          </article>
         </div>
       </section>
 
-      <!-- ============================================================ ABLATIONS -->
-      <section class="section blog-section" id="ablations" aria-labelledby="ablations-title">
-        <div class="section-heading">
-          <h2 id="ablations-title">What each ingredient buys</h2>
-        </div>
-        <article class="narrative-card">
-          <p>
-            Every component of the recipe is validated in isolation, with the robot data, backbone,
-            fine-tuning protocol, and pre-training budget held fixed.
-          </p>
-        </article>
-
-        <div class="ablation-grid">
-          <article class="table-card">
-            <h3>① Shallow-layer protection</h3>
-            <p class="table-intro">
-              Freezing the vision encoder and lower LLM layers during pre-training reduces
-              representation drift and improves downstream fine-tuning.
+      <section class="section transfer-section" id="transfer" data-section>
+        <div class="transfer-shell reveal">
+          <div class="transfer-copy">
+            <p class="section-index">02 · The result to remember</p>
+            <h2>A robot embodiment unseen in pre-training—<em>yet strong in transfer.</em></h2>
+            <p>
+              Robot pre-training uses Franka data from DROID and MolmoAct, plus AgileX data from
+              InternData-A1 and RoboCoin. GR-1 trajectories are absent from pre-training; VLAct is
+              then fine-tuned on RoboCasa-GR1. Move the data budget to inspect that adaptation.
             </p>
-            <div class="table-wrap">
-              <table class="result-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Pre-training update strategy</th>
-                    <th scope="col">LIBERO-Plus</th>
-                    <th scope="col">RoboTwin 2.0</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><th scope="row">Update full backbone</th><td>78.9</td><td>77.1</td></tr>
-                  <tr class="row-alt"><th scope="row">Freeze vision encoder only</th><td class="second">81.3</td><td class="second">79.3</td></tr>
-                  <tr class="row-ours"><th scope="row">Freeze vision encoder + lower ½ LLM</th><td class="best">82.6</td><td class="best">80.5</td></tr>
-                </tbody>
-              </table>
+
+            <div class="budget-readout" aria-live="polite">
+              <div>
+                <span id="budget-percent">20%</span>
+                <small>of RoboCasa-GR1 trajectories</small>
+              </div>
+              <div>
+                <span id="budget-score">49.5%</span>
+                <small>VLAct success</small>
+              </div>
             </div>
-            <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-          </article>
 
-          <article class="table-card">
-            <h3>③ Unified action representation</h3>
-            <p class="table-intro">
-              Sharing the action head already helps; aligning output coordinates by embodiment role
-              helps more.
-            </p>
-            <div class="table-wrap">
-              <table class="result-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Setting</th>
-                    <th scope="col">RoboTwin</th>
-                    <th scope="col">LIBERO-Plus</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><th scope="row">Separate heads</th><td>78.5</td><td>81.1</td></tr>
-                  <tr class="row-alt"><th scope="row">Unified head</th><td class="second">79.5</td><td class="second">81.4</td></tr>
-                  <tr class="row-ours"><th scope="row">Unified action representation</th><td class="best">80.5</td><td class="best">82.6</td></tr>
-                </tbody>
-              </table>
+            <div class="slider-wrap">
+              <label for="data-budget">Fine-tuning data budget</label>
+              <input id="data-budget" type="range" min="0" max="3" step="1" value="1" />
+              <div class="slider-labels" aria-hidden="true">
+                <span>10%</span><span>20%</span><span>50%</span><span>100%</span>
+              </div>
             </div>
-            <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-          </article>
 
-          <article class="table-card">
-            <h3>② Head diversity reduces decoder lock-in</h3>
-            <p class="table-intro">
-              PI is the downstream fine-tuning head. OFT-only pre-training makes it
-              <em>worse</em> than from scratch; adding a second head flips the sign, even though PI
-              is still unseen during pre-training.
+            <p class="fine-print">
+              Values are task success rates. Fractions refer to RoboCasa-GR1 fine-tuning trajectories;
+              this is an unseen-pretraining-embodiment transfer test, not zero-shot deployment.
             </p>
-            <div class="table-wrap">
-              <table class="result-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Pre-training heads</th>
-                    <th scope="col">PI seen?</th>
-                    <th scope="col">PI fine-tune</th>
-                    <th scope="col">Δ vs. scratch</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><th scope="row">None</th><td>—</td><td>60.5</td><td>—</td></tr>
-                  <tr><th scope="row">OFT</th><td>No</td><td>55.1</td><td>−5.4</td></tr>
-                  <tr class="row-alt"><th scope="row">OFT + GR00T</th><td>No</td><td class="second">63.1</td><td>+2.6</td></tr>
-                  <tr class="row-ours"><th scope="row">OFT + PI + GR00T</th><td>Yes</td><td class="best">78.4</td><td>+17.9</td></tr>
-                </tbody>
-              </table>
+          </div>
+
+          <div class="transfer-chart" role="group" aria-label="RoboCasa-GR1 success comparison">
+            <div class="chart-head">
+              <p>RoboCasa-GR1 task success rate (%)</p>
+              <span>Higher is better</span>
             </div>
-            <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-          </article>
-
-          <article class="table-card">
-            <h3>② Head diversity also helps same-head adaptation</h3>
-            <p class="table-intro">
-              Multi-head supervision does not cost anything when the downstream head matches one of
-              the pre-training heads — it helps.
-            </p>
-            <div class="table-wrap">
-              <table class="result-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Fine-tune head</th>
-                    <th scope="col">From scratch</th>
-                    <th scope="col">Single-head</th>
-                    <th scope="col">Head-diverse</th>
-                    <th scope="col">Δ vs. single</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><th scope="row">OFT</th><td>61.7</td><td class="second">78.8</td><td class="best">80.5</td><td>+1.7</td></tr>
-                  <tr><th scope="row">PI</th><td>60.5</td><td class="second">75.4</td><td class="best">78.4</td><td>+3.0</td></tr>
-                  <tr><th scope="row">GR00T</th><td>51.2</td><td class="second">71.7</td><td class="best">75.2</td><td>+3.5</td></tr>
-                </tbody>
-              </table>
+            <div class="chart-row chart-row-primary">
+              <div class="chart-label">
+                <strong>VLAct</strong>
+                <span id="budget-label">20% fine-tuning data</span>
+              </div>
+              <div class="bar-track"><span id="vlact-bar" style="--bar-width: 82.5%"></span></div>
+              <strong id="vlact-bar-value">49.5</strong>
             </div>
-            <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-          </article>
-
-          <article class="table-card">
-            <h3>③ Unified joint space + wrap-aware loss</h3>
-            <p class="table-intro">
-              RoboTwin Base setting, 50 tasks × 50 trajectories, Clean split. Only the wrapping
-              treatment differs between rows.
-            </p>
-            <div class="table-wrap">
-              <table class="result-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Setting</th>
-                    <th scope="col">Unified joint space</th>
-                    <th scope="col">Wrap loss</th>
-                    <th scope="col">RoboTwin</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><th scope="row">Baseline</th><td></td><td></td><td>75.5</td></tr>
-                  <tr class="row-alt"><th scope="row">Unified joint space</th><td>✓</td><td></td><td class="second">78.6</td></tr>
-                  <tr class="row-ours"><th scope="row">+ Wrap-aware loss</th><td>✓</td><td>✓</td><td class="best">80.5</td></tr>
-                </tbody>
-              </table>
+            <div class="chart-divider"><span>reported 100%-data baselines</span></div>
+            <div class="chart-row">
+              <div class="chart-label"><strong>Qwen3VL-OFT</strong><span>100% fine-tuning data</span></div>
+              <div class="bar-track"><span style="--bar-width: 81.33%"></span></div>
+              <strong>48.8</strong>
             </div>
-            <p class="scroll-hint" hidden>Scroll the table horizontally to see all columns →</p>
-          </article>
+            <div class="chart-row">
+              <div class="chart-label"><strong>GR00T-N1.6</strong><span>100% fine-tuning data</span></div>
+              <div class="bar-track"><span style="--bar-width: 79.33%"></span></div>
+              <strong>47.6</strong>
+            </div>
+            <div class="chart-row">
+              <div class="chart-label"><strong>π0.5</strong><span>100% fine-tuning data</span></div>
+              <div class="bar-track"><span style="--bar-width: 61.67%"></span></div>
+              <strong>37.0</strong>
+            </div>
 
-          <article class="table-card">
-            <h3>① Which auxiliary data preserves the prior?</h3>
-            <p class="table-intro">
-              LIBERO-Plus, with robot data, model, and pre-training budget fixed. Every auxiliary
-              source beats robot-only training; image captions give the strongest single-source
-              gain, taking 75.0 → <strong>82.6</strong>. Even the off-domain, text-only
-              instruction source improves on robot-only training, which is why the paper reads
-              the effect as representation preservation rather than task transfer.
-            </p>
-            <figure class="paper-figure ablation-figure">
-              <img
-                class="paper-figure-media"
-                src="./static/figures/aux_data_ablation.png"
-                alt="Bar chart of LIBERO-Plus success rate. Baseline 75.0, plus pre-training 79.6, plus BBox-QA 80.2, plus Point-QA 80.9, plus code 80.6, plus Spatial-QA 81.9, plus image caption 82.6, plus mixed data 82.5. Reference lines mark Abot-M0 at 80.5 and OpenVLA-OFT at 69.6."
-                width="1800"
-                height="782"
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>
-                Because the total number of pre-training steps is fixed, mixing several auxiliary
-                sources lowers the sampling frequency of caption data — which is why the mixed
-                setting (82.5) lands just below caption-only (82.6).
-              </figcaption>
-            </figure>
-          </article>
-        </div>
-
-        <div class="figure-grid spaced">
-          <figure class="paper-figure">
-            <img
-              class="paper-figure-media"
-              src="./static/figures/layerwise_attention.jpg"
-              alt="Attention-distribution grid for two indoor scenes: a bedroom queried with the word 'sofa', and a study nook queried with the word 'screen'. Each row shows the input image followed by attention heatmaps at layers 0, 6, 12, 17, 18, 28, and 35, with a divider after layer 17 marking the lower half of the LLM. Early layers spread attention broadly across the image; deeper layers concentrate on the region matching the queried word."
-              width="2000"
-              height="650"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>
-              <strong>Layer-wise attention.</strong> Lower layers attend broadly to visual and
-              spatial information; deeper layers focus on semantic, task-relevant regions. This
-              motivates freezing the vision encoder and lower LLM layers during pre-training.
-            </figcaption>
-          </figure>
-          <figure class="paper-figure">
-            <img
-              class="paper-figure-media"
-              src="./static/figures/action_head_families.png"
-              alt="Schematic comparing four action-head families: FAST discretizes action chunks into autoregressive tokens; OFT attaches a lightweight MLP that regresses the chunk in one forward pass; PI and GR00T use DiT-style motor modules conditioned on backbone features and generate actions by flow matching, with GR00T using a more decoupled dual-system design."
-              width="2200"
-              height="599"
-              loading="lazy"
-              decoding="async"
-            />
-            <figcaption>
-              <strong>Action-head families.</strong> FAST preserves the VLM's autoregressive
-              interface via discrete action tokens; OFT regresses continuous actions in parallel;
-              PI and GR00T generate continuous chunks with a DiT-style motor module through flow
-              matching.
-            </figcaption>
-          </figure>
+            <svg class="transfer-line" viewBox="0 0 640 170" role="img" aria-labelledby="transfer-line-title">
+              <title id="transfer-line-title">VLAct task success rises from 41.42 percent at 10 percent data to 54.0 percent at full data.</title>
+              <path class="line-grid" d="M40 30H610 M40 85H610 M40 140H610" />
+              <polyline points="40,132 230,61 420,48 610,28" />
+              <circle cx="40" cy="132" r="5" />
+              <circle cx="230" cy="61" r="5" />
+              <circle cx="420" cy="48" r="5" />
+              <circle cx="610" cy="28" r="5" />
+              <circle class="active-point" id="active-point" cx="230" cy="61" r="11" />
+              <g aria-hidden="true">
+                <text x="40" y="162">10%</text>
+                <text x="230" y="162">20%</text>
+                <text x="420" y="162">50%</text>
+                <text x="610" y="162">100%</text>
+              </g>
+            </svg>
+          </div>
         </div>
       </section>
 
-      <!-- ============================================================ CONCLUSION -->
-      <section class="section closing-section" aria-labelledby="takeaway-title">
-        <h2 id="takeaway-title">Takeaway</h2>
-        <p>
-          We presented <strong>VLAct</strong>, a representation-centric VLA pre-training recipe for
-          building more transferable VLM backbones from limited robot data. Instead of treating
-          robot pre-training as large-scale action fitting, VLAct preserves the broad VLM prior,
-          avoids over-specialization to a single action head, and encourages shared action
-          semantics across embodiments.
-        </p>
-        <p>
-          It surpasses strong VLA baselines on LIBERO-Plus, achieves state-of-the-art performance
-          on RoboTwin&nbsp;2.0, ranks in the top quartile of the RoboDojo leaderboard while
-          outperforming several industry-developed systems, and rapidly adapts to a humanoid
-          embodiment unseen during pre-training on RoboCasa-GR1. These results are obtained using
-          fully open-source data and only a 16-GPU training setup. Their competitiveness against
-          predominantly industry-backed systems shows that VLA progress is not only a matter of
-          scaling robot trajectories or compute: <strong>better pre-training design can
-          substantially improve what a fixed resource budget delivers.</strong>
-        </p>
-        <p>
-          <em>Limitations.</em> Due to resource constraints, our study focuses on a 4B-scale VLM
-          backbone and does not explore substantially larger models. Larger VLMs may contain
-          stronger visual, spatial, and language priors, and the optimal pre-training recipe may
-          change with model scale.
-        </p>
-      </section>
-
-      <!-- ================================================================ BIBTEX -->
-      <section class="section" id="bibtex" aria-labelledby="bibtex-title">
-        <div class="section-heading">
-          <h2 id="bibtex-title">BibTeX</h2>
+      <section class="section method-section" id="method" data-section>
+        <div class="section-heading reveal">
+          <p class="section-index">03 · Representation-centric pre-training</p>
+          <h2>Before scaling more,<br /><em>get the representation right.</em></h2>
+          <p class="method-heading-note">Three pre-training principles shape a more transferable backbone.</p>
         </div>
-        <article class="bibtex-card">
-          <div class="bibtex-head">
-            <p class="bibtex-note">
-              Preliminary entry — it will be updated with the arXiv identifier on release.
-            </p>
-            <button class="copy-button" type="button" data-copy-target="bibtex-entry">
-              Copy BibTeX
+
+        <div class="method-explorer reveal">
+          <div class="method-tabs" role="tablist" aria-label="VLAct method components">
+            <button id="tab-preserve" type="button" role="tab" aria-selected="true" aria-controls="panel-preserve" data-method="preserve">
+              <span>01</span>
+              <strong>Preserve</strong>
+              <small>Keep the VLM prior</small>
+            </button>
+            <button id="tab-diversify" type="button" role="tab" aria-selected="false" aria-controls="panel-diversify" data-method="diversify">
+              <span>02</span>
+              <strong>Diversify</strong>
+              <small>Learn beyond one decoder</small>
+            </button>
+            <button id="tab-unify" type="button" role="tab" aria-selected="false" aria-controls="panel-unify" data-method="unify">
+              <span>03</span>
+              <strong>Unify</strong>
+              <small>Share physical semantics</small>
             </button>
           </div>
-          <pre id="bibtex-entry"><code>@article{yang2026vlact,
-  title   = {Beyond Data Scaling: Representation-Centric Pre-training
-             for Vision-Language-Action Models},
-  author  = {Yang, Senqiao and Wang, Chengyao and Chen, Yuxin and
-             Wang, Zixuan and Tang, Longxiang and Gui, Haokun and
-             Ye, Jinhui and Lu, Changsheng and Wu, Xiaoyang and
-             Zhu, Mingkang and Chen, Pengguang and Liu, Shu and
-             Tian, Zhuotao and Zhao, Hengshuang and Yu, Bei and
-             Jia, Jiaya},
-  journal = {arXiv preprint},
-  year    = {2026}
+
+          <div class="method-panels">
+            <div class="method-panel is-active" id="panel-preserve" role="tabpanel" aria-labelledby="tab-preserve" data-panel="preserve">
+              <div class="method-panel-copy">
+                <p class="method-kicker">Preserve</p>
+                <h3>Keep what the VLM already knows.</h3>
+                <p>
+                  The entire vision encoder and lower half of the LLM layers are frozen during VLA
+                  pre-training, while caption supervision anchors broad visual and semantic knowledge.
+                  The full model is unfrozen again during downstream fine-tuning.
+                </p>
+                <div class="method-note"><strong>82.6%</strong><span>highest LIBERO-Plus result in the auxiliary-data ablation, achieved with caption co-training</span></div>
+              </div>
+              <button class="method-figure figure-button" type="button" data-zoom="assets/caption-mix.png" data-zoom-title="Caption-data ablation">
+                <img src="assets/caption-mix.png" alt="Ablation showing the effect of different vision-language data mixtures" loading="lazy" />
+                <span class="zoom-hint">Open figure <span aria-hidden="true">↗</span></span>
+              </button>
+            </div>
+
+            <div class="method-panel" id="panel-diversify" role="tabpanel" aria-labelledby="tab-diversify" data-panel="diversify" hidden>
+              <div class="method-panel-copy">
+                <p class="method-kicker">Diversify</p>
+                <h3>Learn actions—not one decoder.</h3>
+                <p>
+                  OFT, PI, and GR00T jointly supervise the same backbone. Those pre-training heads are
+                  discarded, and a freshly initialized task-specific head is attached during fine-tuning.
+                </p>
+                <div class="method-note"><strong>3 heads</strong><span>one shared latent representation</span></div>
+              </div>
+              <button class="method-figure figure-button" type="button" data-zoom="assets/head-transfer.png" data-zoom-title="Action-head transfer study">
+                <img src="assets/head-transfer.png" alt="Bar charts showing how pre-training action heads affect downstream transfer" loading="lazy" />
+                <span class="zoom-hint">Open figure <span aria-hidden="true">↗</span></span>
+              </button>
+            </div>
+
+            <div class="method-panel" id="panel-unify" role="tabpanel" aria-labelledby="tab-unify" data-panel="unify" hidden>
+              <div class="method-panel-copy">
+                <p class="method-kicker">Unify</p>
+                <h3>Share semantics without pretending robots are identical.</h3>
+                <p>
+                  Comparable controls such as gripper motion share coordinates. Incompatible arm
+                  dimensions remain separate and masked, with wrap-aware loss for periodic joints.
+                </p>
+                <div class="method-note"><strong>Shared meaning</strong><span>only where the physics agrees</span></div>
+              </div>
+              <button class="method-figure figure-button" type="button" data-zoom="assets/action-space.png" data-zoom-title="Partially unified action representation">
+                <img src="assets/action-space.png" alt="Comparison of separate, naively unified, and partially unified action representations" loading="lazy" />
+                <span class="zoom-hint">Open figure <span aria-hidden="true">↗</span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <figure class="full-figure reveal">
+          <button class="figure-button" type="button" data-zoom="assets/method.png" data-zoom-title="VLAct pre-training and fine-tuning recipe">
+            <img src="assets/method.png" alt="Overview of the VLAct pre-training and fine-tuning recipe" loading="lazy" />
+            <span class="zoom-hint">Open figure <span aria-hidden="true">↗</span></span>
+          </button>
+          <figcaption>
+            Pre-training heads act as scaffolding. Downstream tasks receive the backbone and a freshly initialized action head.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="section evidence-section" id="evidence" data-section>
+        <div class="section-heading section-heading-row reveal">
+          <div>
+            <p class="section-index">04 · Evidence across regimes</p>
+            <h2>Transfer is the <em>real test.</em></h2>
+          </div>
+          <p>
+            In controlled backbone comparisons, the downstream head, data budget, and fine-tuning recipe
+            stay fixed. Published systems are included separately for broader context.
+          </p>
+        </div>
+
+        <div class="benchmark-explorer reveal">
+          <div class="benchmark-tabs" role="tablist" aria-label="Benchmark selector">
+            <button id="benchmark-tab-libero" type="button" role="tab" aria-selected="true" aria-controls="benchmark-content" data-benchmark="libero">LIBERO-Plus</button>
+            <button id="benchmark-tab-vla" type="button" role="tab" aria-selected="false" aria-controls="benchmark-content" data-benchmark="vla">VLA-Arena</button>
+            <button id="benchmark-tab-robotwin" type="button" role="tab" aria-selected="false" aria-controls="benchmark-content" data-benchmark="robotwin">RoboTwin 2.0</button>
+            <button id="benchmark-tab-domino" type="button" role="tab" aria-selected="false" aria-controls="benchmark-content" data-benchmark="domino">DOMINO</button>
+            <button id="benchmark-tab-robocasa" type="button" role="tab" aria-selected="false" aria-controls="benchmark-content" data-benchmark="robocasa">RoboCasa-GR1</button>
+            <button id="benchmark-tab-robodojo" type="button" role="tab" aria-selected="false" aria-controls="benchmark-content" data-benchmark="robodojo">RoboDojo</button>
+          </div>
+
+          <div class="benchmark-content" id="benchmark-content" role="tabpanel" aria-labelledby="benchmark-tab-libero">
+            <div class="benchmark-summary">
+              <p id="benchmark-kicker">Robust single-arm manipulation</p>
+              <p class="benchmark-number" id="benchmark-number">82.6<span>%</span></p>
+              <h3 id="benchmark-title">Highest score in the paper's LIBERO-Plus comparison</h3>
+              <p id="benchmark-description">
+                VLAct improves over the matched Qwen3VL-OFT baseline by 7.6 percentage points and surpasses ABot-M0 in the reported comparison.
+              </p>
+              <p class="benchmark-note" id="benchmark-note">Official Total across seven perturbation axes; it is not a simple mean of rounded axis values</p>
+            </div>
+            <div class="benchmark-bars-wrap">
+              <p class="benchmark-bars-label" id="benchmark-bars-label">Official Total success rate (%)</p>
+              <div class="benchmark-bars" id="benchmark-bars" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="section real-section" id="real-world" data-section>
+        <div class="section-heading reveal">
+          <p class="section-index">05 · Beyond simulation</p>
+          <h2>From precise picks to<br /><em>coordinated</em> manipulation.</h2>
+        </div>
+
+        <p class="protocol-note reveal">
+          Physical setup: stationary, table-mounted Franka Research 3 arms; one external Intel
+          RealSense D435 and one wrist-mounted D405 per arm. Separate models are fine-tuned for
+          single-arm and dual-arm evaluations, each for 50k steps on 8 H800 GPUs. Every task is
+          evaluated over 10 rollouts.
+        </p>
+
+        <div class="real-layout">
+          <div class="real-media reveal">
+            <div class="rollout-player" data-rollout-player>
+              <div
+                class="rollout-stage is-portrait is-loading"
+                data-rollout-stage
+                style="--rollout-poster: url('assets/video-posters/stack-blocks.jpg')"
+              >
+                <video
+                  id="rollout-video"
+                  src="assets/videos/stack-blocks.mp4"
+                  poster="assets/video-posters/stack-blocks.jpg"
+                  aria-label="VLAct cube-stacking real-robot rollout"
+                  controls
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                >
+                  Your browser does not support embedded MP4 video.
+                </video>
+                <div class="rollout-badge"><span></span> Real robot · model rollout · playback 1×</div>
+                <div class="rollout-loader" aria-hidden="true"></div>
+                <div class="rollout-error" id="rollout-error" hidden>
+                  <strong>Video unavailable.</strong>
+                  <span id="rollout-error-copy">Try again or choose another rollout.</span>
+                  <button type="button" id="rollout-retry">Retry</button>
+                </div>
+              </div>
+              <div class="rollout-caption">
+                <div class="rollout-copy">
+                  <p id="rollout-label">Cube stacking</p>
+                  <span id="rollout-type">VLAct · single arm, short horizon</span>
+                </div>
+                <p class="rollout-counter" id="rollout-counter" aria-hidden="true">01 / 13</p>
+              </div>
+              <div class="rollout-library">
+                <div class="rollout-library-head">
+                  <p>Choose a rollout</p>
+                  <span>11 VLAct rollouts · 2 matched baseline rollouts</span>
+                </div>
+                <div class="rollout-groups" role="group" aria-label="Select a real-robot rollout video">
+                  <div class="rollout-group" role="group" aria-labelledby="rollout-short-label">
+                    <p class="rollout-group-label" id="rollout-short-label">Short horizon</p>
+                    <div class="rollout-tasks">
+                      <button type="button" aria-pressed="true" data-rollout="cube" aria-label="Play VLAct cube-stacking rollout">Cube stacking</button>
+                      <button type="button" aria-pressed="false" data-rollout="carrot" aria-label="Play VLAct carrot-from-pot rollout">Carrot</button>
+                      <button type="button" aria-pressed="false" data-rollout="button" aria-label="Play VLAct button-pressing rollout">Button</button>
+                      <button type="button" aria-pressed="false" data-rollout="pen" aria-label="Play VLAct pen-in-cup rollout">Pen in cup</button>
+                    </div>
+                  </div>
+
+                  <div class="rollout-group" role="group" aria-labelledby="rollout-long-label">
+                    <p class="rollout-group-label" id="rollout-long-label">Long horizon</p>
+                    <div class="rollout-tasks">
+                      <button type="button" aria-pressed="false" data-rollout="table" aria-label="Play VLAct table-cleaning rollout">Table cleaning</button>
+                      <button type="button" aria-pressed="false" data-rollout="beans" aria-label="Play VLAct scoop-beans rollout">Scoop beans</button>
+                    </div>
+                  </div>
+
+                  <div class="rollout-group" role="group" aria-labelledby="rollout-dual-label">
+                    <p class="rollout-group-label" id="rollout-dual-label">Dual arm</p>
+                    <div class="rollout-tasks">
+                      <button type="button" aria-pressed="false" data-rollout="unplug" aria-label="Play VLAct unplugging rollout">Unplugging</button>
+                      <button type="button" aria-pressed="false" data-rollout="breakfast" aria-label="Play VLAct breakfast-preparation rollout">Breakfast</button>
+                      <button type="button" aria-pressed="false" data-rollout="handover" aria-label="Play VLAct banana-handover-place rollout">Banana handover</button>
+                      <button type="button" aria-pressed="false" data-rollout="pants" aria-label="Play VLAct fold-pants rollout">Fold pants</button>
+                      <button type="button" aria-pressed="false" data-rollout="towel" aria-label="Play VLAct fold-towel rollout">Fold towel</button>
+                    </div>
+                  </div>
+
+                  <div class="rollout-group" role="group" aria-labelledby="rollout-baseline-label">
+                    <p class="rollout-group-label" id="rollout-baseline-label">Baselines</p>
+                    <div class="rollout-tasks">
+                      <button type="button" aria-pressed="false" data-rollout="table-baseline" aria-label="Play Qwen3VL-4B-OFT table-cleaning baseline rollout">Table baseline</button>
+                      <button type="button" aria-pressed="false" data-rollout="beans-baseline" aria-label="Play Qwen3VL-4B-OFT scoop-beans baseline rollout">Beans baseline</button>
+                    </div>
+                  </div>
+                </div>
+                <p class="sr-only" id="rollout-video-status" aria-live="polite"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="real-story reveal">
+            <div class="real-tabs" role="tablist" aria-label="Real-world result category">
+              <button id="real-tab-short" type="button" role="tab" aria-selected="true" aria-controls="real-result" data-real="short">Short horizon</button>
+              <button id="real-tab-novel" type="button" role="tab" aria-selected="false" aria-controls="real-result" data-real="novel">Novel objects</button>
+              <button id="real-tab-long" type="button" role="tab" aria-selected="false" aria-controls="real-result" data-real="long">Long horizon</button>
+              <button id="real-tab-dual" type="button" role="tab" aria-selected="false" aria-controls="real-result" data-real="dual">Dual arm</button>
+            </div>
+            <div class="real-result" id="real-result" role="tabpanel" aria-labelledby="real-tab-short" aria-live="polite">
+              <p class="real-number" id="real-number">92.5%</p>
+              <h3 id="real-title">Reliable short-horizon control</h3>
+              <p id="real-description">
+                Mean success across four in-domain single-arm tasks, compared with 77.5% for Qwen3VL-4B-OFT without VLA pre-training; 10 rollouts per task.
+              </p>
+              <div class="comparison-pill"><span>VLAct gain</span><strong id="real-gain">+15.0 pp</strong></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="section open-section" id="open" data-section>
+        <div class="open-card checkpoint-showcase reveal">
+          <div class="open-copy">
+            <p class="section-index">06 · Models &amp; checkpoints</p>
+            <h2>Choose your<br /><em>starting point.</em></h2>
+            <p>
+              The continued-pretraining backbone is the recommended base for new embodiments, datasets,
+              and action heads. Task-specific fine-tuned checkpoints are listed below.
+            </p>
+            <div class="checkpoint-primary-actions">
+              <a class="button button-light" href="https://huggingface.co/collections/StarVLA/vlact-6a903c2e0c176179da425c96" target="_blank" rel="noreferrer">
+                Browse the VLAct collection <span aria-hidden="true">↗</span>
+              </a>
+              <a class="text-link" href="https://github.com/starVLA/VLAct/blob/main/scripts/run_scripts/Pretrain/README.md" target="_blank" rel="noreferrer">
+                Dataset Preparation <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+
+          <a
+            class="checkpoint-feature"
+            href="https://huggingface.co/StarVLA/VLAct_Qwen3_Pretrain"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div class="checkpoint-feature-head">
+              <span class="checkpoint-recommended"><i aria-hidden="true"></i> Recommended starting point</span>
+              <span class="checkpoint-status is-live">Weights available</span>
+            </div>
+            <div>
+              <p class="checkpoint-kind">Continued-pretraining backbone</p>
+              <h3>VLAct · Qwen3-VL-4B</h3>
+              <p>
+                The intended general-purpose VLAct representation before downstream task fine-tuning.
+                Use it as the default adaptation base for a new robot, dataset, or action head.
+              </p>
+            </div>
+            <div class="checkpoint-link-row">
+              <code>StarVLA/VLAct_Qwen3_Pretrain</code>
+              <span>Open repository <span aria-hidden="true">↗</span></span>
+            </div>
+          </a>
+
+          <div class="checkpoint-catalog">
+            <div class="checkpoint-catalog-head">
+              <h3>Fine-tuned checkpoints</h3>
+              <p>Pick the target benchmark or dataset.</p>
+            </div>
+            <ul class="checkpoint-grid">
+              <li>
+                <a class="checkpoint-item" href="https://huggingface.co/StarVLA/VLAct-Qwen3VL4B-OFT-RoboDojo" target="_blank" rel="noreferrer">
+                  <span class="checkpoint-status is-live">Weights available</span>
+                  <h4>RoboDojo</h4>
+                  <p>OFT action head · 100k steps</p>
+                  <code>VLAct-Qwen3VL4B-OFT-RoboDojo</code>
+                  <span class="checkpoint-action">Open checkpoint <span aria-hidden="true">↗</span></span>
+                </a>
+              </li>
+              <li>
+                <a class="checkpoint-item" href="https://huggingface.co/StarVLA/VLAct_Qwen3GR00T_Robotwin_Finetune" target="_blank" rel="noreferrer">
+                  <span class="checkpoint-status is-live">Weights available</span>
+                  <h4>RoboTwin 2.0</h4>
+                  <p>GR00T action head · 50k steps</p>
+                  <code>VLAct_Qwen3GR00T_Robotwin_Finetune</code>
+                  <span class="checkpoint-action">Open checkpoint <span aria-hidden="true">↗</span></span>
+                </a>
+              </li>
+              <li>
+                <a class="checkpoint-item" href="https://huggingface.co/StarVLA/VLAct_Qwen3PI_VLA_Arena_Finetune" target="_blank" rel="noreferrer">
+                  <span class="checkpoint-status is-live">Weights available</span>
+                  <h4>VLA-Arena</h4>
+                  <p>PI action head</p>
+                  <code>VLAct_Qwen3PI_VLA_Arena_Finetune</code>
+                  <span class="checkpoint-action">Open checkpoint <span aria-hidden="true">↗</span></span>
+                </a>
+              </li>
+              <li>
+                <a class="checkpoint-item" href="https://huggingface.co/StarVLA/VLAct_Qwen3PI_Libero_Plus_Finetune" target="_blank" rel="noreferrer">
+                  <span class="checkpoint-status is-live">Weights available</span>
+                  <h4>LIBERO-Plus</h4>
+                  <p>PI action head</p>
+                  <code>VLAct_Qwen3PI_Libero_Plus_Finetune</code>
+                  <span class="checkpoint-action">Open checkpoint <span aria-hidden="true">↗</span></span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section citation-section" id="citation" data-section>
+        <div class="citation-copy reveal">
+          <p class="section-index">07 · Read and cite</p>
+          <h2>Beyond data scaling.</h2>
+          <p>
+            Representation quality is an independent axis of VLA progress. Read the full report for
+            protocols, ablations, per-task results, and implementation details.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="assets/VLAct.pdf">Download PDF <span aria-hidden="true">↓</span></a>
+            <a class="text-link" href="mailto:yangsenqiao.ai@gmail.com">Project contact <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+
+        <div class="citation-box reveal">
+          <div class="citation-bar">
+            <span>Provisional BibTeX</span>
+            <button type="button" id="copy-citation">Copy citation</button>
+          </div>
+          <pre id="citation-text"><code>@misc{yang2026vlact,
+  title   = {Beyond Data Scaling: Representation-Centric
+             Pre-training for Vision-Language-Action Models},
+  author  = {Yang, Senqiao and Wang, Chengyao and Chen, Yuxin
+             and Wang, Zixuan and Tang, Longxiang and Gui, Haokun
+             and Ye, Jinhui and Lu, Changsheng and Wu, Xiaoyang
+             and Zhu, Mingkang},
+  year    = {2026},
+  month   = aug,
+  note    = {Technical report},
+  url     = {https://starvla.github.io/VLAct/}
 }</code></pre>
-        </article>
+          <p class="citation-status">Replace with the official arXiv or venue entry when it becomes available.</p>
+        </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <p>
-        <strong>Beyond Data Scaling: Representation-Centric Pre-training for
-        Vision-Language-Action Models</strong>
-      </p>
-      <p>
-        Built on the <a href="https://github.com/starVLA/starVLA" target="_blank" rel="noopener">StarVLA</a>
-        codebase &middot; Questions or suggestions: open an issue on
-        <a href="https://github.com/starVLA/VLAct" target="_blank" rel="noopener">GitHub</a>,
-        or contact the corresponding authors through the links at the top of this page.
-      </p>
+    <footer class="site-footer">
+      <div>
+        <a class="wordmark wordmark-footer" href="#top">
+          <span class="wordmark-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>VLAct</span>
+        </a>
+        <p>A representation-centric, VLA-oriented VLM backbone.</p>
+      </div>
+      <div class="footer-links">
+        <a href="assets/VLAct.pdf">Paper</a>
+        <a href="https://github.com/starVLA/starVLA" target="_blank" rel="noreferrer">Framework</a>
+        <a href="mailto:yangsenqiao.ai@gmail.com">Contact</a>
+      </div>
+      <p class="footer-note">© <span id="current-year">2026</span> VLAct research team.</p>
     </footer>
 
-    <script src="./static/js/script.js" defer></script>
+    <dialog class="figure-modal" id="figure-modal">
+      <button class="modal-close" type="button" aria-label="Close figure">×</button>
+      <div class="modal-stage">
+        <img id="modal-image" src="assets/method.png" alt="" />
+      </div>
+      <p id="modal-title"></p>
+    </dialog>
+
+    <script src="app.js"></script>
   </body>
 </html>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#173867" stroke-opacity=".08"/>
+    </pattern>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dce8f3"/>
+      <stop offset="1" stop-color="#f4f1e8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#f4f1e8"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1020" cy="80" r="320" fill="url(#glow)"/>
+  <g transform="translate(72 67)">
+    <circle cx="20" cy="20" r="17" fill="none" stroke="#173867" stroke-width="2"/>
+    <circle cx="20" cy="2" r="4" fill="#173867"/>
+    <circle cx="35" cy="29" r="4" fill="#173867"/>
+    <circle cx="6" cy="30" r="4" fill="#ee8d6c"/>
+    <text x="52" y="30" fill="#173867" font-family="Georgia, serif" font-size="35">VLAct</text>
+  </g>
+  <text x="72" y="205" fill="#111417" font-family="Georgia, serif" font-size="72">Beyond Data Scaling:</text>
+  <text x="76" y="258" fill="#173867" font-family="Georgia, serif" font-size="31">Representation-Centric Pre-training for</text>
+  <text x="76" y="296" fill="#173867" font-family="Georgia, serif" font-size="31">Vision-Language-Action Models</text>
+  <text x="76" y="352" fill="#555b60" font-family="Georgia, serif" font-size="25">Make every robot trajectory <tspan fill="#2e63b6" font-style="italic">teach more.</tspan></text>
+  <g transform="translate(72 431)">
+    <rect width="320" height="108" rx="14" fill="#173867"/>
+    <text x="24" y="49" fill="#fff" font-family="Georgia, serif" font-size="42">20% data</text>
+    <text x="24" y="78" fill="#b9cfea" font-family="Arial, sans-serif" font-size="15">beats reported full-data GR00T-N1.6 on GR-1</text>
+  </g>
+  <g transform="translate(416 431)">
+    <rect width="190" height="108" rx="14" fill="#dce8f3" stroke="#173867" stroke-opacity=".18"/>
+    <text x="22" y="49" fill="#173867" font-family="Georgia, serif" font-size="42">82.6%</text>
+    <text x="22" y="78" fill="#555b60" font-family="Arial, sans-serif" font-size="15">LIBERO-Plus</text>
+  </g>
+  <g transform="translate(630 431)">
+    <rect width="190" height="108" rx="14" fill="#dce8f3" stroke="#173867" stroke-opacity=".18"/>
+    <text x="22" y="49" fill="#173867" font-family="Georgia, serif" font-size="42">92.5%</text>
+    <text x="22" y="78" fill="#555b60" font-family="Arial, sans-serif" font-size="15">RoboTwin 2.0</text>
+  </g>
+  <g transform="translate(844 431)">
+    <rect width="190" height="108" rx="14" fill="#f4dfd5" stroke="#173867" stroke-opacity=".18"/>
+    <text x="22" y="49" fill="#173867" font-family="Georgia, serif" font-size="42">16 GPUs</text>
+    <text x="22" y="78" fill="#555b60" font-family="Arial, sans-serif" font-size="15">open-data pre-training</text>
+  </g>
+  <path d="M1054 190c-104 21-173 90-182 207" fill="none" stroke="#2e63b6" stroke-width="3" stroke-dasharray="8 10"/>
+  <circle cx="1054" cy="190" r="10" fill="#ee8d6c"/>
+  <circle cx="872" cy="397" r="10" fill="#2e63b6"/>
+</svg>
