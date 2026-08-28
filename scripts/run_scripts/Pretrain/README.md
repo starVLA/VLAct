@@ -1,15 +1,21 @@
-# Qwen3 pre-training
+# VLAct continued pre-training
 
 Pre-training jointly uses VLA robot data and VLM image-text data. Run all commands from the repository root.
 
-## 1. Download the base model
+## 1. Download the base models
 
 ```bash
-huggingface-cli download StarVLA/Qwen3-VL-4B-Instruct \
-  --local-dir playground/Pretrained_models/Qwen3-VL-4B-Instruct
+huggingface-cli download StarVLA/Qwen3-VL-4B-Instruct-Action \
+  --local-dir playground/Pretrained_models/Qwen3-VL-4B-Instruct-Action
+
+# Required by the PI action expert in the three-head framework.
+huggingface-cli download Qwen/Qwen3-0.6B \
+  --local-dir playground/Pretrained_models/Qwen3-0.6B
 ```
 
-Set `base_vlm` in the training script to this local directory if offline training is required.
+Set `base_vlm` in the training launcher to the local Qwen3-VL directory. The checked-in launchers
+currently reference `StarVLA/Qwen3-VL-4B-Instruct`; replace that value with the public `-Action`
+checkpoint above or another compatible Qwen3-VL-4B checkpoint available in your environment.
 
 ## 2. Prepare VLM data
 
@@ -95,6 +101,16 @@ python examples/MolmoAct/compute_caches_molmoact_delta_eef.py \
 ```
 
 ## 4. Start training
+
+The launchers expect an Accelerate configuration at
+`starVLA/config/deepseeds/deepspeed_zero2.yaml`. Generate a DeepSpeed ZeRO Stage 2 configuration at
+that path, or change the launcher's `--config_file` argument:
+
+```bash
+mkdir -p starVLA/config/deepseeds
+accelerate config \
+  --config_file starVLA/config/deepseeds/deepspeed_zero2.yaml
+```
 
 ```bash
 # Eight GPUs on one node
