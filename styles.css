@@ -2145,6 +2145,14 @@ input:focus-visible {
   text-transform: uppercase;
 }
 
+.checkpoint-scope-note {
+  max-width: 920px;
+  margin: -4px 0 20px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
 .checkpoint-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));

@@ -16,10 +16,10 @@ Then open `http://localhost:8000/website/`.
 
 The directory is self-contained and can be published as a GitHub Pages artifact or copied into a dedicated `VLAct` Pages repository.
 
-`assets/VLAct.pdf` is a snapshot of `out/StarVLA.pdf`; refresh it whenever the manuscript changes. The real-robot gallery uses 13 H.264 rollout sources under `assets/videos/`; three derived portrait crops remove baked-in sidebars while retaining the original MP4s. Gallery posters live under `assets/video-posters/`.
+`assets/VLAct.pdf` is a snapshot of the authoritative `Beyond_Data__Scaling_VLAct_Arxiv_3.pdf`; refresh it whenever the manuscript changes. The real-robot gallery uses 13 H.264 rollout sources under `assets/videos/`; three derived portrait crops remove baked-in sidebars while retaining the original MP4s. Gallery posters live under `assets/video-posters/`.
 
-The checkpoint section uses the verified public VLAct collection and presents the backbone and four downstream repositories as released checkpoints. At the time of the August 27, 2026 audit, RoboDojo and RoboTwin GR00T contained downloadable weights; populate the continued-pretraining, VLA-Arena, and LIBERO-Plus repositories before public deployment.
+The checkpoint section follows the release owner's requested public labels. At the August 28, 2026 audit, RoboDojo and RoboTwin GR00T contained downloadable weights; the continued-pretraining, VLA-Arena, and LIBERO-Plus repositories were public placeholders awaiting their model files. The page explicitly distinguishes each released artifact's action head from the head used for the corresponding headline result in the paper.
 
 See `CLAIMS.md` for the source and scope of every headline number used on the page.
 
-Canonical and social-preview URLs target `https://starvla.github.io/VLAct/`; that address must be deployed before the page is publicly shared.
+Canonical and social-preview URLs target the deployed project URL, `https://starvla.github.io/VLAct/`.
