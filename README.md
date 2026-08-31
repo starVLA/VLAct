@@ -4,7 +4,7 @@
 
 # Beyond Data Scaling: Representation-Centric Continued Pre-training for Vision-Language-Action Models
 
-[![Paper](https://img.shields.io/badge/Paper-PDF-b31b1b.svg)](https://starvla.github.io/VLAct/assets/VLAct.pdf)
+[![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b.svg)](https://arxiv.org/abs/2608.27550)
 [![Project Page](https://img.shields.io/badge/Project-Page-1f6feb.svg)](https://starvla.github.io/VLAct/)
 [![Video](https://img.shields.io/badge/Video-YouTube-red.svg)](https://youtu.be/aTrIbDQ7a2o)
 [![Models](https://img.shields.io/badge/%F0%9F%A4%97-Hugging_Face-ffcc4d.svg)](https://huggingface.co/collections/StarVLA/vlact-6a903c2e0c176179da425c96)
@@ -27,12 +27,12 @@
 <a id="news"></a>
 ## News
 
-- [x] **[2026.08]** The [paper](https://starvla.github.io/VLAct/assets/VLAct.pdf), [code](https://github.com/starVLA/VLAct), [project site](https://starvla.github.io/VLAct/), continued-pretraining backbone, and selected downstream checkpoints are public.
+- [x] **[2026.08]** The [paper](https://arxiv.org/abs/2608.27550), [code](https://github.com/starVLA/VLAct), [project site](https://starvla.github.io/VLAct/), continued-pretraining backbone, and selected downstream checkpoints are public.
 - [x] **[2026.08]** VLAct entered the [RoboDojo leaderboard](https://robodojo-benchmark.com/leaderboard), ranking 6th of 35 policies by success rate and ahead of every explicitly designated world-action model in the August 24 snapshot.
 
 ---
 
-**Beyond Data Scaling: Representation-Centric Continued Pre-training for Vision-Language-Action Models [[Paper](https://starvla.github.io/VLAct/assets/VLAct.pdf)]** <br />
+**Beyond Data Scaling: Representation-Centric Continued Pre-training for Vision-Language-Action Models [[Paper](https://arxiv.org/abs/2608.27550)]** <br />
 <a href="https://senqiaoyang.com/">Senqiao Yang</a><sup>†</sup>,
 <a href="https://wcy1122.github.io/">Chengyao Wang</a><sup>†</sup>,
 <a href="https://scholar.google.com/citations?user=fyewGpgAAAAJ&amp;hl=en">Yuxin Chen</a>,
@@ -395,7 +395,7 @@ deployment/                                        # real-robot policy server
 <a id="citation"></a>
 ## ✍️ Citation
 
-The following entry is provisional until the official arXiv or venue record is available:
+Please cite the official arXiv paper:
 
 ```bibtex
 @misc{yang2026vlact,
@@ -406,9 +406,10 @@ The following entry is provisional until the official arXiv or venue record is a
              Wu, Xiaoyang and Zhu, Mingkang and Chen, Pengguang and Liu, Shu and
              Tian, Zhuotao and Zhao, Hengshuang and Yu, Bei and Jia, Jiaya},
   year    = {2026},
-  month   = aug,
-  note    = {Preprint},
-  url     = {https://starvla.github.io/VLAct/}
+  eprint  = {2608.27550},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url     = {https://arxiv.org/abs/2608.27550}
 }
 
 @misc{starvla2025,
