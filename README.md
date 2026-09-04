@@ -398,27 +398,28 @@ deployment/                                        # real-robot policy server
 Please cite the official arXiv paper:
 
 ```bibtex
-@misc{yang2026vlact,
-  title   = {Beyond Data Scaling: Representation-Centric Continued Pre-training
-             for Vision-Language-Action Models},
-  author  = {Yang, Senqiao and Wang, Chengyao and Chen, Yuxin and Wang, Zixuan and
-             Tang, Longxiang and Gui, Haokun and Ye, Jinhui and Lu, Changsheng and
-             Wu, Xiaoyang and Zhu, Mingkang and Chen, Pengguang and Liu, Shu and
-             Tian, Zhuotao and Zhao, Hengshuang and Yu, Bei and Jia, Jiaya},
-  year    = {2026},
-  eprint  = {2608.27550},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.RO},
-  url     = {https://arxiv.org/abs/2608.27550}
+@article{yang2026beyond,
+  title={Beyond Data Scaling: Representation-Centric Continued Pre-training for Vision-Language-Action Models},
+  author={Yang, Senqiao and Wang, Chengyao and Chen, Yuxin and Wang, Zixuan and Tang, Longxiang and Gui, Haokun and Ye, Jinhui and Lu, Changsheng and Wu, Xiaoyang and Zhu, Mingkang and others},
+  journal={arXiv preprint arXiv:2608.27550},
+  year={2026}
 }
 
-@misc{starvla2025,
-  title        = {StarVLA: A Lego-like Codebase for Vision-Language-Action Model Developing},
-  author       = {starVLA Contributors},
-  year         = {2025},
-  url          = {https://github.com/starVLA/starVLA},
-  doi          = {10.5281/zenodo.18264214},
-  howpublished = {GitHub repository}
+@article{ye2026starvla,
+  title={StarVLA-$$\backslash$alpha $: Reducing Complexity in Vision-Language-Action Systems},
+  author={Ye, Jinhui and Gao, Ning and Yang, Senqiao and Zheng, Jinliang and Wang, Zixuan and Chen, Yuxin and Chen, Pengguang and Chen, Yilun and Liu, Shu and Jia, Jiaya},
+  journal={arXiv preprint arXiv:2604.11757},
+  year={2026}
+}
+
+@misc{community2026starvlalegolikecodebasevisionlanguageaction,
+      title={StarVLA: A Lego-like Codebase for Vision-Language-Action Model Developing}, 
+      author={StarVLA Community},
+      year={2026},
+      eprint={2604.05014},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2604.05014}, 
 }
 ```
 
