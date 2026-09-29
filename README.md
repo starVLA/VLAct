@@ -2,7 +2,7 @@
   <img src="assets/VLAct-update.png" width="90%" alt="VLAct overview: a generalist VLA backbone built through representation-centric continued pre-training">
 </p>
 
-# Beyond Data Scaling: Representation-Centric Continued Pre-training for Vision-Language-Action Models
+# [NeurIPS 2026] Beyond Data Scaling: Representation-Centric Continued Pre-training for Vision-Language-Action Models
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv-b31b1b.svg)](https://arxiv.org/abs/2608.27550)
 [![Project Page](https://img.shields.io/badge/Project-Page-1f6feb.svg)](https://starvla.github.io/VLAct/)
@@ -27,6 +27,7 @@
 <a id="news"></a>
 ## News
 
+- [x] **[2026.09]** :tada: VLAct has been accepted to NeurIPS 2026 with two strong accepts!
 - [x] **[2026.08]** The [paper](https://arxiv.org/abs/2608.27550), [code](https://github.com/starVLA/VLAct), [project site](https://starvla.github.io/VLAct/), continued-pretraining backbone, and selected downstream checkpoints are public.
 - [x] **[2026.08]** VLAct entered the [RoboDojo leaderboard](https://robodojo-benchmark.com/leaderboard), ranking 6th of 35 policies by success rate and ahead of every explicitly designated world-action model in the August 24 snapshot.
 
