@@ -375,6 +375,34 @@ input:focus-visible {
   letter-spacing: -0.026em;
 }
 
+.acceptance-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  max-width: 100%;
+  margin: 24px 0 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(225, 106, 74, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 246, 229, 0.82);
+  color: var(--blue-deep);
+  box-shadow: 0 16px 36px rgba(46, 99, 182, 0.11);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.acceptance-badge small {
+  padding-left: 12px;
+  border-left: 1px solid rgba(225, 106, 74, 0.35);
+  color: var(--coral-dark);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .hero-statement {
   max-width: 650px;
   margin: 25px 0 0;
@@ -2564,6 +2592,13 @@ a.checkpoint-item:hover {
   .hero-title-sub {
     margin-top: 14px;
     font-size: clamp(27px, 8vw, 37px);
+  }
+
+  .acceptance-badge {
+    width: fit-content;
+    border-radius: 18px;
+    font-size: 11px;
+    line-height: 1.35;
   }
 
   .hero-slogan {
